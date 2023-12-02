@@ -1,0 +1,144 @@
+.menu {
+    background-color: #F0FAFF;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    margin: 0;
+    padding: 0;
+    color: #07B6C4;
+   
+
+  }
+
+  
+  .menu {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+   
+}
+
+.menu .brand {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    padding: 11px 15px 4px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.logo {
+    padding-right: 15px;
+}
+
+.menu .brand h1 {
+    margin-left: 15px;
+    font-size: 28px;
+}
+
+.navbar {
+    padding: 15px 20px;
+    max-height: 80vh;
+    overflow: auto;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.navbar::-webkit-scrollbar {
+    width: 0;
+}
+
+.menu .navbar .nav-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.nav-item-parent {
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    height: 40px;
+    width: 100%;
+    border-radius: 22px;
+  
+    cursor: pointer;
+    position: relative;
+    transition: all 0.5s ease;
+}
+
+
+.nav-item-childs {
+    background-color: #07B6C4;
+    width: 111%;
+    margin: 2px 0;
+    border-radius: 3px;
+}
+
+.nav-item-child {
+    display: flex;
+    align-items: center;  
+   
+    padding: 0 10px;
+    height: 40px;
+    width: 90%;
+    border-radius: 6px;
+    border-bottom: 3px solid #F0FAFF;
+    cursor: pointer;
+    transition: all 0.5s ease;
+    margin-right: 10px ;
+    color:#07B6C4;
+}
+
+.nav-item-child .text {
+    margin-left: 35px;
+}
+
+.nav-item-child .icon-active {
+    background: url('../../assets//icon/All-icon.svg') no-repeat -1081px -72px;
+    width: 15px;
+    height: 8px;
+    
+}
+
+.nav-item-child:hover .icon-active,
+.nav-item-child.router-link-active .icon-active {
+ 
+    transition: all 0.5s ease;
+}
+
+
+.nav-item-child:hover,
+.nav-item-child.router-link-active {
+    background-color: #07B6C4;
+    color: #fff !important;
+    font-weight: 700;
+    
+}
+
+.menu .navbar .nav-item-parent:hover,
+.menu .navbar .nav-item-parent.router-link-active {
+    background-color: #07B6C4;
+    color: #fff !important;
+    opacity: 1;
+    font-weight: 700;
+}
+
+.menu .navbar .nav-item .nav-item-text {
+    margin-left: 10px;
+   
+   
+  
+}
+
+
+
+
+
+.menu a {
+    text-decoration: none;
+    color:#07b7c4dc;
+    font-weight: 600;
+    font-size: 14px;
+  
+}

@@ -1,0 +1,52 @@
+button {
+  cursor: pointer;
+}
+.header {
+  background-color: #1c3048;
+  display: flex;
+  align-items: center;
+  padding: 0px 20px;
+  font-weight: 700;
+  grid-column-start: 1;
+  grid-column-end: 3;
+  justify-content: space-between;
+  width: 100%;
+
+}
+.avatar{
+  background-color:#4CCDEA ;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #ffff;
+}
+.notifi{
+  position: relative;
+}
+.noti{
+  width: 4px;
+  height: 4px;
+  background: red;
+  position: absolute;
+  border-radius: 50%;
+  right: 10px;
+  top: 10px
+}
+.right{
+  display: flex;
+  align-items: center;
+  padding: 0px 20px;
+}
+.header .brand-text {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  padding: 11px 15px 4px;
+  font-weight: bold;
+  color: #ffff;
+  font-size: 20px;
+  cursor: pointer;
+}
