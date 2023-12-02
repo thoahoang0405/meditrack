@@ -53,6 +53,12 @@
           </div>
         </div>
       </div>
+      <div class="notice mt-2 mr-2">
+        <div class="notice-content">
+          <div class="icon notice-blue mr-1"></div>
+          Bạn có 2 cuộc hẹn hôm nay
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -147,48 +153,7 @@ export default {
           address: "Hà nội",
           time: "Từ 9h đến 10h",
         },
-        {
-          title: "Khám sức khoẻ định kỳ",
-          date: "12/12/2023",
-          address: "Hà nội",
-          time: "Từ 9h đến 10h",
-        },
-        {
-          title: "Khám sức khoẻ định kỳ",
-          date: "12/12/2023",
-          address: "Hà nội",
-          time: "Từ 9h đến 10h",
-        },
-        {
-          title: "Khám sức khoẻ định kỳ",
-          date: "12/12/2023",
-          address: "Hà nội",
-          time: "Từ 9h đến 10h",
-        },
-        {
-          title: "Khám sức khoẻ định kỳ",
-          date: "12/12/2023",
-          address: "Hà nội",
-          time: "Từ 9h đến 10h",
-        },
-        {
-          title: "Khám sức khoẻ định kỳ",
-          date: "12/12/2023",
-          address: "Hà nội",
-          time: "Từ 9h đến 10h",
-        },
-        {
-          title: "Khám sức khoẻ định kỳ",
-          date: "12/12/2023",
-          address: "Hà nội",
-          time: "Từ 9h đến 10h",
-        },
-        {
-          title: "Khám sức khoẻ định kỳ",
-          date: "12/12/2023",
-          address: "Hà nội",
-          time: "Từ 9h đến 10h",
-        },
+
       ],
     };
   },

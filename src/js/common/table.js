@@ -3,7 +3,7 @@ export const Table ={
     numericTooltip:"Số thứ tự",
     prescriptionName: "Tên đơn thuốc",
     PrescriptionDate:"Ngày y lệnh",
-    UsedName: "Người sử dụng thuốc",
+    PatientName: "Người sử dụng thuốc",
     PrescriptionStatus: "Trạng thái",
     CreatedByDoctor:"Bác sĩ chỉ định",
     Diagnose:"Chẩn đoán",
@@ -50,4 +50,19 @@ export const TablePrescription={
     FromDate:"Sử dụng từ ngày",
     ToDate:"Sử dụng đến ngày",
     Notes:"Ghi chú"
+}
+
+export const TableRecord={
+    numeric: "STT",
+    numericTooltip:"Số thứ tự",
+    RecordName: "Tiêu để hồ sơ",
+    MedicalExaminationAddress:"Địa chỉ khám bệnh",
+    DoctorName: "Bác sĩ khám",
+    FullName: "Tên bệnh nhân",
+    PrescriptionName:"Tên đơn thuốc",
+    Diagnose:"Chẩn đoán",
+    TreatmentDate:"Ngày điều trị",
+    Notes:"Ghi chú",
+    patientName:"Hồ sơ của"
+
 }

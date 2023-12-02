@@ -205,8 +205,8 @@ border-right: 1px solid #afafaf !important;
 }
 div#table\ {
   /* height: 565px; */
-  /* height: calc(100% - 45px); */
-  box-shadow: 3px 5px 8px 0 rgba(0, 0, 0, 0.2);
+  height: calc(100% - 150px);
+ 
 
 
 }
@@ -383,6 +383,10 @@ input[type="checkbox"] {
 .function-table {
   display: flex;
   justify-content: space-evenly;
+  position: sticky;
+  right: 0;
+  top: 0;
+
 }
 .table-footer {
   width: 100%;

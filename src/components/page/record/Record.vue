@@ -1,8 +1,8 @@
 <template>
-  <div class="prescription">
+  <div class="record">
     <div class="header-appoint">
       <div class="title">
-        <h2 class="mr-2 mb-2">Quản lý đơn thuốc</h2>
+        <h2 class="mr-2 mb-2">Quản lý hồ sơ sức khỏe</h2>
         <div class="radio-user mb-1">
           <input class="mr-1" type="radio" value="1" v-model="model.user" />
           <label class="mr-2" for="1">Tôi</label>
@@ -36,20 +36,20 @@
                   <div class="tooltip-stt">{{ tableInfo.numericTooltip }}</div>
                 </th>
 
-                <th>{{ tableInfo.prescriptionName }}</th>
-                <th class="text-center">{{ tableInfo.PrescriptionDate }}</th>
-                <th> {{ tableInfo.CreatedByDoctor }}</th>
-                <th>{{ tableInfo.PrescriptionStatus }}</th>
-                <th>{{ tableInfo.CreatedByAddress }}</th>
+                <th>{{ tableInfo.RecordName }}</th>
+                <th class="text-center">{{ tableInfo.FullName }}</th>
+                <th>{{ tableInfo.MedicalExaminationAddress }}</th>
+                <th>{{ tableInfo.DoctorName }}</th>
                 <th>{{ tableInfo.Diagnose }}</th>
+                <th>{{ tableInfo.PrescriptionName }}</th>
 
                 <th>
                   <div class="text-center">
-                    {{ tableInfo.FromDate }}
+                    {{ tableInfo.TreatmentDate }}
                   </div>
                 </th>
-                <th class="text-center">{{ tableInfo.ToDate }}</th>
-                <th v-if="model.user!=1">{{ tableInfo.PatientName }}</th>
+                <th class="text-center">{{ tableInfo.Notes }}</th>
+                <th v-if="model.user != 1">{{ tableInfo.patientName }}</th>
                 <th>{{ tableInfo.function }}</th>
               </tr>
             </thead>
@@ -88,50 +88,45 @@
                 <td
                   style="
                     min-width: 100px;
-                    max-width: 100px;
                     box-sizing: border-box;
                   "
                 >
-                  {{ asset.PrescriptionName }}
+                  {{ asset.RecordName }}
                 </td>
                 <td
                   style="
                     min-width: 130px;
-                    max-width: 130px;
                     box-sizing: border-box;
                   "
                   class="text-center"
                 >
-                  {{ asset.PrescriptionDate }}
+                  {{ asset.MedicalExaminationAddress }}
                 </td>
                 <td
                   style="
                     max-width: 140px !important;
-                    min-width: 140px !important;
                     box-sizing: border-box;
                   "
                 >
-                {{ asset.CreatedByDoctor }}
-
+                  {{ asset.DoctorName }}
                 </td>
                 <td
                   style="
                     min-width: 90px;
-                    max-width: 90px;
                     box-sizing: border-box;
                   "
                 >
-                  {{ asset.PrescriptionStatus }}
+                  {{ asset.FullName }}
                 </td>
 
                 <td
                   style="
-                    min-width: 150px;
+                    min-width: 140px;
                     max-width: auto;
                     box-sizing: border-box;
                   "
                 >
-                  {{ asset.CreatedByAddress }}
+                  {{ asset.PrescriptionName }}
                 </td>
                 <td
                   style="
@@ -145,44 +140,43 @@
                 <td
                   style="
                     min-width: 120px;
-                    max-width: 120px;
                     box-sizing: border-box;
                   "
                   class="text-center"
                 >
-                  {{ asset.FromDate }}
+                  {{ asset.TreatmentDate }}
                 </td>
                 <td
                   style="
                     min-width: 104px;
-                    max-width: 104px;
                     box-sizing: border-box;
                   "
                   class="text-center"
                 >
-                  {{ asset.ToDate }}
+                  {{ asset.Notes }}
                 </td>
 
-                <td v-if="model.user!=1"
+                <td
+                  v-if="model.user != 1"
                   style="
                     min-width: 104px;
-                    max-width: 104px;
                     box-sizing: border-box;
                   "
                 >
-                {{ asset.PatientName }}
+                  {{ asset.patientName }}
                 </td>
                 <td
                   style="
                     min-width: 90px;
-                    max-width: 90px;
+                    
                     box-sizing: border-box;
                   "
                 >
                   <div class="function-table">
-                    <div class="func-edit" @click="showFormEdit(asset)">
+                    <div class="func-edit mr-1" @click="showFormEdit(asset)">
                       Xem/Sửa
                     </div>
+                    <div class="icon icon-delete"></div>
                   </div>
                 </td>
               </tr>
@@ -204,7 +198,7 @@
                     </div>
                   </div>
                 </td>
-                
+              
                 <td
                   colspan="2"
                   style="
@@ -228,18 +222,18 @@
                     </div>
 
                     <!-- v-model="pageNumber"
-                      :page-count="totalPage"
-                      :page-range="3"
-                      :margin-pages="1"
-                      :click-handler="clickCallback"
-                      :prev-link-class="'page-link'"
-                      :prev-text="'<'"
-                      :prev-class="'page-item'"
-                      :next-link-class="'page-link'"
-                      :next-text="'>'"
-                      :next-class="'page-item'"
-                      :container-class="'pagination'"
-                      :page-class="'page-item'" -->
+                        :page-count="totalPage"
+                        :page-range="3"
+                        :margin-pages="1"
+                        :click-handler="clickCallback"
+                        :prev-link-class="'page-link'"
+                        :prev-text="'<'"
+                        :prev-class="'page-item'"
+                        :next-link-class="'page-link'"
+                        :next-text="'>'"
+                        :next-class="'page-item'"
+                        :container-class="'pagination'"
+                        :page-class="'page-item'" -->
                   </div>
                 </td>
 
@@ -281,15 +275,15 @@
                     >
                       <div class="content-page">
                         {{ pageDefault }} bản ghi trên trang
-                         <div class="up-down" @click="btnDropUp"> 
-                        <div
-                          class="down"
-                          :class="isShowPage == true ? 'show' : ''"
-                          @click="btnDropUp"
-                        >
-                          <div class="icon-down-bold icon"></div>
+                        <div class="up-down" @click="btnDropUp">
+                          <div
+                            class="down"
+                            :class="isShowPage == true ? 'show' : ''"
+                            @click="btnDropUp"
+                          >
+                            <div class="icon-down-bold icon"></div>
+                          </div>
                         </div>
-                        </div> 
                       </div>
                     </div>
                     <div class="dropup-page">
@@ -346,6 +340,7 @@
                     box-sizing: border-box;
                   "
                 ></td>
+
               </tr>
             </tfoot>
           </table>
@@ -358,11 +353,8 @@
 <script>
 import Paginate from "vuejs-paginate-next";
 import MSFunction from "../../../js/common/function";
-import { Table } from "../../../js/common/table";
-import {
-  FormDetailMode,
-  CloseST,
-} from "../../../js/common/enumeration";
+import { TableRecord } from "../../../js/common/table";
+import { FormDetailMode, CloseST } from "../../../js/common/enumeration";
 import {
   ErrorMsg,
   btnPopup,
@@ -373,7 +365,7 @@ export default {
   components: {
     Paginate,
   },
-  name: "Prescription-page",
+  name: "Record-page",
   props: {
     msg: String,
   },
@@ -400,7 +392,7 @@ export default {
       isShowPage: false,
       assetSelected: [],
       prescription_id: "",
-      tableInfo: Table,
+      tableInfo: TableRecord,
       name: "",
       selectedItems: [], // các item được chọn
       formMode: 0,
@@ -720,100 +712,179 @@ export default {
       me.totalQuantity = 44;
       me.prescriptions = [
         {
-          PrescriptionName: "Thuốc trị cảm cúm",
-          PrescriptionDate: "10/10/2023",
-          PatientName: 0,
-          PrescriptionStatus: 3,
-          CreatedByDoctor: "Kiều Văn Khương",
-          Diagnose: "K58- Đau đầu",
-          CreatedByAddress: "Bệnh viện quân y 103",
-          FromDate: "11/10/2023",
-          ToDate: "11/11/2023",
-          Notes: "Thuốc không dành cho phụ nữ mang thai",
+          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
+          MedicalExaminationAddress: "Bệnh viện quân y 103",
+          DoctorName: "Nguyễn Văn Nam",
+          FullName: "Nguyễn Ngọc Lan",
+          PrescriptionName: "Trị cảm cúm",
+          Diagnose: "Sốt",
+          TreatmentDate: "20/11/2023",
+          Notes: "",
+          patientName: "Nguyễn Văn A",
         },
         {
-          PrescriptionName: "Thuốc trị cảm cúm",
-          PrescriptionDate: "10/10/2023",
-          PatientName: 0,
-          PrescriptionStatus: 1,
-          CreatedByDoctor: "Kiều Văn Khương",
-          Diagnose: "K58- Đau đầu",
-          CreatedByAddress: "Bệnh viện quân y 103",
-          FromDate: "11/10/2023",
-          ToDate: "11/11/2023",
-          Notes: "Thuốc không dành cho phụ nữ mang thai",
+          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
+          MedicalExaminationAddress: "Bệnh viện quân y 103",
+          DoctorName: "Nguyễn Văn Nam",
+          FullName: "Nguyễn Ngọc Lan",
+          PrescriptionName: "Trị cảm cúm",
+          Diagnose: "Sốt",
+          TreatmentDate: "20/11/2023",
+          Notes: "",
+          patientName: "Nguyễn Văn A",
         },
         {
-          PrescriptionName: "Thuốc trị cảm cúm",
-          PrescriptionDate: "10/10/2023",
-          PatientName: 0,
-          PrescriptionStatus: 2,
-          CreatedByDoctor: "Kiều Văn Khương",
-          Diagnose: "K58- Đau đầu",
-          CreatedByAddress: "Bệnh viện quân y 103",
-          FromDate: "11/10/2023",
-          ToDate: "11/11/2023",
-          Notes: "Thuốc không dành cho phụ nữ mang thai",
+          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
+          MedicalExaminationAddress: "Bệnh viện quân y 103",
+          DoctorName: "Nguyễn Văn Nam",
+          FullName: "Nguyễn Ngọc Lan",
+          PrescriptionName: "Trị cảm cúm",
+          Diagnose: "Sốt",
+          TreatmentDate: "20/11/2023",
+          Notes: "",
+          patientName: "Nguyễn Văn A",
         },
         {
-          PrescriptionName: "Thuốc trị cảm cúm",
-          PrescriptionDate: "10/10/2023",
-          PatientName: 0,
-          PrescriptionStatus: 4,
-          CreatedByDoctor: "Kiều Văn Khương",
-          Diagnose: "K58- Đau đầu",
-          CreatedByAddress: "Bệnh viện quân y 103",
-          FromDate: "11/10/2023",
-          ToDate: "11/11/2023",
-          Notes: "Thuốc không dành cho phụ nữ mang thai",
+          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
+          MedicalExaminationAddress: "Bệnh viện quân y 103",
+          DoctorName: "Nguyễn Văn Nam",
+          FullName: "Nguyễn Ngọc Lan",
+          PrescriptionName: "Trị cảm cúm",
+          Diagnose: "Sốt",
+          TreatmentDate: "20/11/2023",
+          Notes: "",
+          patientName: "Nguyễn Văn A",
         },
         {
-          PrescriptionName: "Thuốc trị cảm cúm",
-          PrescriptionDate: "10/10/2023",
-          PatientName: 0,
-          PrescriptionStatus: 3,
-          CreatedByDoctor: "Kiều Văn Khương",
-          Diagnose: "K58- Đau đầu",
-          CreatedByAddress: "Bệnh viện quân y 103",
-          FromDate: "11/10/2023",
-          ToDate: "11/11/2023",
-          Notes: "Thuốc không dành cho phụ nữ mang thai",
+          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
+          MedicalExaminationAddress: "Bệnh viện quân y 103",
+          DoctorName: "Nguyễn Văn Nam",
+          FullName: "Nguyễn Ngọc Lan",
+          PrescriptionName: "Trị cảm cúm",
+          Diagnose: "Sốt",
+          TreatmentDate: "20/11/2023",
+          Notes: "",
+          patientName: "Nguyễn Văn A",
         },
         {
-          PrescriptionName: "Thuốc trị cảm cúm",
-          PrescriptionDate: "10/10/2023",
-          PatientName: 0,
-          PrescriptionStatus: 2,
-          CreatedByDoctor: "Kiều Văn Khương",
-          Diagnose: "K58- Đau đầu",
-          CreatedByAddress: "Bệnh viện quân y 103",
-          FromDate: "11/10/2023",
-          ToDate: "11/11/2023",
-          Notes: "Thuốc không dành cho phụ nữ mang thai",
+          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
+          MedicalExaminationAddress: "Bệnh viện quân y 103",
+          DoctorName: "Nguyễn Văn Nam",
+          FullName: "Nguyễn Ngọc Lan",
+          PrescriptionName: "Trị cảm cúm",
+          Diagnose: "Sốt",
+          TreatmentDate: "20/11/2023",
+          Notes: "",
+          patientName: "Nguyễn Văn A",
         },
         {
-          PrescriptionName: "Thuốc trị cảm cúm",
-          PrescriptionDate: "10/10/2023",
-          PatientName: 0,
-          PrescriptionStatus: 4,
-          CreatedByDoctor: "Kiều Văn Khương",
-          Diagnose: "K58- Đau đầu",
-          CreatedByAddress: "Bệnh viện quân y 103",
-          FromDate: "11/10/2023",
-          ToDate: "11/11/2023",
-          Notes: "Thuốc không dành cho phụ nữ mang thai",
+          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
+          MedicalExaminationAddress: "Bệnh viện quân y 103",
+          DoctorName: "Nguyễn Văn Nam",
+          FullName: "Nguyễn Ngọc Lan",
+          PrescriptionName: "Trị cảm cúm",
+          Diagnose: "Sốt",
+          TreatmentDate: "20/11/2023",
+          Notes: "",
+          patientName: "Nguyễn Văn A",
         },
         {
-          PrescriptionName: "Thuốc trị cảm cúm",
-          PrescriptionDate: "10/10/2023",
-          PatientName: 0,
-          PrescriptionStatus: 1,
-          CreatedByDoctor: "Kiều Văn Khương",
-          Diagnose: "K58- Đau đầu",
-          CreatedByAddress: "Bệnh viện quân y 103",
-          FromDate: "11/10/2023",
-          ToDate: "11/11/2023",
-          Notes: "Thuốc không dành cho phụ nữ mang thai",
+          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
+          MedicalExaminationAddress: "Bệnh viện quân y 103",
+          DoctorName: "Nguyễn Văn Nam",
+          FullName: "Nguyễn Ngọc Lan",
+          PrescriptionName: "Trị cảm cúm",
+          Diagnose: "Sốt",
+          TreatmentDate: "20/11/2023",
+          Notes: "",
+          patientName: "Nguyễn Văn A",
+        },
+        {
+          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
+          MedicalExaminationAddress: "Bệnh viện quân y 103",
+          DoctorName: "Nguyễn Văn Nam",
+          FullName: "Nguyễn Ngọc Lan",
+          PrescriptionName: "Trị cảm cúm",
+          Diagnose: "Sốt",
+          TreatmentDate: "20/11/2023",
+          Notes: "",
+          patientName: "Nguyễn Văn A",
+        },
+        {
+          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
+          MedicalExaminationAddress: "Bệnh viện quân y 103",
+          DoctorName: "Nguyễn Văn Nam",
+          FullName: "Nguyễn Ngọc Lan",
+          PrescriptionName: "Trị cảm cúm",
+          Diagnose: "Sốt",
+          TreatmentDate: "20/11/2023",
+          Notes: "",
+          patientName: "Nguyễn Văn A",
+        },
+        {
+          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
+          MedicalExaminationAddress: "Bệnh viện quân y 103",
+          DoctorName: "Nguyễn Văn Nam",
+          FullName: "Nguyễn Ngọc Lan",
+          PrescriptionName: "Trị cảm cúm",
+          Diagnose: "Sốt",
+          TreatmentDate: "20/11/2023",
+          Notes: "",
+          patientName: "Nguyễn Văn A",
+        },
+        {
+          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
+          MedicalExaminationAddress: "Bệnh viện quân y 103",
+          DoctorName: "Nguyễn Văn Nam",
+          FullName: "Nguyễn Ngọc Lan",
+          PrescriptionName: "Trị cảm cúm",
+          Diagnose: "Sốt",
+          TreatmentDate: "20/11/2023",
+          Notes: "",
+          patientName: "Nguyễn Văn A",
+        }, {
+          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
+          MedicalExaminationAddress: "Bệnh viện quân y 103",
+          DoctorName: "Nguyễn Văn Nam",
+          FullName: "Nguyễn Ngọc Lan",
+          PrescriptionName: "Trị cảm cúm",
+          Diagnose: "Sốt",
+          TreatmentDate: "20/11/2023",
+          Notes: "",
+          patientName: "Nguyễn Văn A",
+        },
+        {
+          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
+          MedicalExaminationAddress: "Bệnh viện quân y 103",
+          DoctorName: "Nguyễn Văn Nam",
+          FullName: "Nguyễn Ngọc Lan",
+          PrescriptionName: "Trị cảm cúm",
+          Diagnose: "Sốt",
+          TreatmentDate: "20/11/2023",
+          Notes: "",
+          patientName: "Nguyễn Văn A",
+        },
+        {
+          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
+          MedicalExaminationAddress: "Bệnh viện quân y 103",
+          DoctorName: "Nguyễn Văn Nam",
+          FullName: "Nguyễn Ngọc Lan",
+          PrescriptionName: "Trị cảm cúm",
+          Diagnose: "Sốt",
+          TreatmentDate: "20/11/2023",
+          Notes: "",
+          patientName: "Nguyễn Văn A",
+        },
+        {
+          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
+          MedicalExaminationAddress: "Bệnh viện quân y 103",
+          DoctorName: "Nguyễn Văn Nam",
+          FullName: "Nguyễn Ngọc Lan",
+          PrescriptionName: "Trị cảm cúm",
+          Diagnose: "Sốt",
+          TreatmentDate: "20/11/2023",
+          Notes: "",
+          patientName: "Nguyễn Văn A",
         },
       ];
     },
@@ -1115,7 +1186,7 @@ tr .data:hover {
   background-color: #fff;
   margin-left: -2px;
   margin-top: -208px;
- 
+
   z-index: 10;
   border: 1px solid #bbb;
 }
@@ -1202,7 +1273,7 @@ tr .data:hover {
 }
 
 .page .icon.icon-down-bold {
- margin-right: 8px;
+  margin-right: 8px;
 }
 .down {
   height: 100%;
@@ -1212,7 +1283,7 @@ tr .data:hover {
   justify-content: center;
   align-items: center;
   margin-left: 64px;
-    margin-top: 32px;
+  margin-top: 32px;
 }
 .page .up-down {
   height: 100%;
@@ -1222,7 +1293,6 @@ tr .data:hover {
   transform: translateX(-50%);
   justify-content: center;
   align-items: center;
-  
 }
-@import url(./Prescription.scss);
+@import url(./Record.scss);
 </style>

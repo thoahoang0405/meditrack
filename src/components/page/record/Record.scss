@@ -1,5 +1,5 @@
-.prescription .header-appoint .title h2,
-.prescription .header-appoint .title .radio-user {
+.record .header-appoint .title h2,
+.record .header-appoint .title .radio-user {
   color: #07b6c4;
 }
 .radio-user {
@@ -10,10 +10,10 @@
   display: flex;
   align-items: center;
 }
-.prescription {
+.record {
   padding: 20px 20px 20px 40px;
 }
-.prescription .input-seach {
+.record .input-seach {
   height: 28px;
   border: 1px solid rgba(0, 0, 0, 48%);
   width: 300px;
@@ -31,14 +31,14 @@
   left: 326px;
   top: 6px;
 }
-.prescription .input-seach:focus-visible {
+.record .input-seach:focus-visible {
   border: 1px solid #07b6c4 !important;
 }
-.prescription .nav {
+.record .nav {
   display: flex;
   justify-content: space-between;
 }
-.prescription .item-app {
+.record .item-app {
   width: 340px;
   height: 130px;
   border: 3px solid #07b6c4;
@@ -49,19 +49,19 @@
   margin-bottom: 12px;
 }
 
-.prescription .item-app .title-item{
+.record .item-app .title-item{
     display: flex;
    justify-content: center;
    font-weight: bold;
 }
-.prescription .main-item .content{
+.record .main-item .content{
     display: flex;
    
 }
-.prescription .main-item .content .title{
+.record .main-item .content .title{
    width: 80px;
 }
-.prescription .main-item {
+.record .main-item {
     position: relative;
     
 }
@@ -90,11 +90,11 @@
     font-weight: bold;
 
 }
-.prescription .main{
-  margin-top: 20px;
-  height: calc(100vh - 185px);
-  overflow-y: auto;
-  overflow-x: hidden;
+.record .main{
+    margin-top: 20px;
+    height: calc(100vh - 185px);
+    overflow-y: auto;
+    overflow-x: hidden;
     .list-app{
         display: flex;
         flex-wrap: wrap;
@@ -102,7 +102,7 @@
 
 
 }
-.prescription{
+.record{
   .paginate{
     
     .pagination {

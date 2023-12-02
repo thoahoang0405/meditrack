@@ -4,6 +4,7 @@ import Appointment from "../src/components/page/appointment/Appointment.vue"
 import Prescription from "../src/components/page/prescription/Prescription.vue"
 import Register from "../src/components/page/Register.vue"
 import Login from "../src/components/page/Login.vue"
+import Record from "../src/components/page/record/Record.vue"
 const routes =  [
       {
         path: '/',
@@ -41,15 +42,15 @@ const routes =  [
             },
             {
               path: "/home/health",
-              component: HomePage,
+              component: Record,
             },
             {
               path: "/home/family",
-              component: HomePage,
+              component: Prescription,
             },
             {
               path: "/home/users",
-              component: HomePage,
+              component: Prescription,
             },
             
         ]

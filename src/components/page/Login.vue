@@ -66,7 +66,6 @@ export default {
       this.$router.push("/register");
     },
     async submit() {
-      debugger;
       const User = new FormData();
       User.append("username", this.form.username);
       User.append("password", this.form.password);
