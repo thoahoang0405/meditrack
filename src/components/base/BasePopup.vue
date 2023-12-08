@@ -1,51 +1,26 @@
 <template>
   <div id="popup" @keyup.enter="keypressEnter" tabindex="0"
 >
-    <div class="popup" :style="closeStatus == 9? {width: 390 + 'px',minHeight: 170 + 'px' }: {}">
+    <div class="popup" >
+      <div class="popup-header">Cảnh báo</div>
       <div class="popup-body">
         <div class="icon-popup">
           <div class="icon icon-warning"></div>
         </div>
 
         <div  class="content-popup">
-          <span>
-            <strong v-if="closeStatus == 3 || closeStatus == 4">{{
-              item1
-            }}</strong>
-          </span>
+         
           <span v-html="msg1"></span>
         </div>
       
       </div>
-      <div class="popup-footer">
-        <button
-          ref="nobutton"
-          v-show="
-            closeStatus == 1 ||
-            closeStatus == 3 ||
-            closeStatus == 4 ||
-            closeStatus == 6
-          "
-          class="no btn-hover-outline"
-          @click="onClickBtnNo"
-        >
-          {{ btnLeft1 }}
-        </button>
-        <button
-          ref="noSave"
-          v-if="closeStatus == 6"
-          class="no-save"
-          @click="onclickNoSave"
-        >
-          Không Lưu
-        </button>
-        <button
-          class="cancel btn-hover-blue"
-          @click="onClickCancel"
-          ref="btn"
-        >
-          {{ name1 }}
-        </button>
+      <div class="popup-footer" v-if="closeStatus==1">
+        <button class="btn button-blue-outline mr-2" @click="onClickBtnNo()">Không</button>
+        <button class="btn button-blue " @click="onClickYes()">Có</button>
+      </div>
+      <div class="popup-footer" v-if="closeStatus==2">
+        <button class="btn button-blue-outline mr-2" @click="onClickCancel()">Huỷ</button>
+        <button class="btn button-blue " @click="onclickSave()">Lưu</button>
       </div>
     </div>
   </div>
@@ -63,9 +38,7 @@ export default {
 
     };
   },
-  mounted() {
-    this.setFocus();
-  },
+ 
   watch: {
     close: function (value) {
       this.closeStatus = value;
@@ -80,11 +53,7 @@ this.btnLeft1=this.btnLeft
   },
   props: ["msg", "name", "close", "item", "btnLeft"],
   methods: {
-    setFocus() {
-      this.$nextTick(function () {
-        this.$refs["btn"].focus();
-      });
-    },
+    
     keypressEnter() {
     
       if (this.closeStatus == CloseST.EditClose) {
@@ -95,28 +64,17 @@ this.btnLeft1=this.btnLeft
     onClickBtnNo() {
       this.$emit("hidePopup", false);
     },
-    onclickNoSave() {
-      this.$emit("hidePopupAndForm", false);
+    onclickSave() {
+      this.$emit("hidePopupSave", false);
     },
     //tắt popup, form
     onClickCancel() {
-      console.log(this.closeStatus);
-
-      if (this.closeStatus == CloseST.DeleteCloseNotChoose || this.closeStatus == CloseST.ValiDate||this.closeStatus==CloseST.DuplicateCode|| this.closeStatus==9) {
         this.$emit("hidePopup", false);
-      } else if (this.closeStatus == CloseST.DeleteMulti || this.closeStatus == CloseST.DeleteOne) {
-        this.$emit("isDelete", false);
-      } else if (this.closeStatus == CloseST.EditClose) {
-        this.$emit("saveAndHideForm", false);
-      }
-      // else if(this.closeStatus == 4){
-
-      //    this.$emit("isDelete",false)
-      //   }
-      else {
-        this.$emit("hidePopupAndForm", false);
-      }
+     
     },
+    onClickYes(){
+      this.$emit("isDelete", false);
+    }
   }
 };
 </script>
@@ -135,13 +93,14 @@ this.btnLeft1=this.btnLeft
   margin: auto;
   position: fixed;
   display: flex;
-
+top:0;
+left:0;
   flex-direction: column;
 }
 .popup {
   font-size: 13px;
-  width: 450px;
-  min-height: 180px;
+ 
+  min-height: 150px;
   height: fit-content;
   background-color: #fff;
   margin: auto;
@@ -155,7 +114,7 @@ this.btnLeft1=this.btnLeft
   align-items: center;
   display: flex;
   margin: 24px;
-  height: calc(100% - 101px);
+  height: calc(100% - 94px);
   /* margin-top: 30px; */
 }
 #content {
@@ -177,15 +136,10 @@ this.btnLeft1=this.btnLeft
   display: flex;
   justify-content: flex-end;
   margin-top: 0px;
-  background-color: #dddddd5e;
+  background-color: #F0FAFF;
   padding: 8px 10px;
 }
-.popup-footer button {
-  min-width: 110px;
-  height: 36px;
-  outline: none;
-  border-radius: 3px;
-}
+
 .popup .no {
   background-color: #fff;
   border: 1px solid #aca8a8;
@@ -215,4 +169,13 @@ this.btnLeft1=this.btnLeft
 .no-save:hover{
   background-color: #abe9f8;
 }
+.popup-header {
+    padding: 0px 0px;
+    color: #07b6c4;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    justify-content: start;
+    margin:16px 0px 0px 16px;
+  }
 </style>

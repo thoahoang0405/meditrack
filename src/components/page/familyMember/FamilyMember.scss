@@ -1,5 +1,5 @@
-.appointment .header-appoint .title h2,
-.appointment .header-appoint .title .radio-user {
+.family .header-appoint .title h2,
+.family .header-appoint .title .radio-user {
   color: #07b6c4;
 }
 
@@ -13,11 +13,11 @@
   align-items: center;
 }
 
-.appointment {
+.family {
   padding: 20px 20px 20px 40px;
 }
 
-.appointment .input-seach {
+.family .input-seach {
   height: 28px;
   border: 1px solid rgba(0, 0, 0, 48%);
   width: 300px;
@@ -39,16 +39,16 @@
   top: 6px;
 }
 
-.appointment .input-seach:focus-visible {
+.family .input-seach:focus-visible {
   border: 1px solid #07b6c4 !important;
 }
 
-.appointment .nav {
+.family .nav {
   display: flex;
-  justify-content: space-between;
+  justify-content: end;
 }
 
-.appointment .item-app {
+.family .item-app {
   width: 300px;
   min-height: 150px;
   max-height: 180px;
@@ -61,23 +61,23 @@
   margin-bottom: 12px;
 }
 
-.appointment .item-app .title-item {
+.family .item-app .title-item {
   display: flex;
   justify-content: center;
   font-weight: bold;
 }
 
-.appointment .main-item .content {
+.family .main-item .content {
   display: flex;
 
 }
 
-.appointment .main-item .content .title {
+.family .main-item .content .title {
   width: 100px;
   font-weight: 700;
 }
 
-.appointment .main-item {
+.family .main-item {
   position: relative;
 
 }
@@ -111,7 +111,7 @@
 
 }
 
-.appointment .main {
+.family .main {
   margin-top: 20px;
   height: calc(100vh - 185px);
   overflow-y: auto;

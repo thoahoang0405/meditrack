@@ -78,7 +78,7 @@
             icon: "icon-users",
             name: "Quản lý tài khoản",
             dropdown: true,
-            to: "/home/users",
+            to: "/home/account",
           },
          
         ],

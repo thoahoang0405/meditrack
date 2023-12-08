@@ -1,0 +1,73 @@
+.account {
+    padding: 20px;
+    .header-account .title h2 {
+        color: #07b6c4;
+    }
+
+    .title {
+        display: flex;
+        align-items: center;
+    }
+
+    .main {
+        margin-top: 20px;
+        height: calc(100vh - 185px);
+        overflow-y: auto;
+        overflow-x: hidden;
+        .group-controll{
+            display: flex;
+            width: 100%;
+            margin-right: 20px;
+            margin-top: 20px;
+           
+            .group-item {
+               margin-right: 20px;
+               display: flex;
+               width: 430px;
+               .label {
+                width: 120px !important;
+                margin-top: 10px;
+            }
+              }
+              .fullname{
+                .input {
+                  width: 300px !important;
+                }
+              }
+              .date{
+                .input {
+                  width: 200px !important;
+                }
+              }
+              .age{
+                .input {
+                  width: 100px !important;
+                }
+              }
+              .phonenumber{
+                .input {
+                    width: 200px !important;
+                  }
+              }
+              .username{
+                .input {
+                    width: 300px !important;
+                  }
+              }
+              .address{
+                width: 880px;
+                .input {
+                    width: 770px !important;
+                  }
+              }
+              
+        }
+        .group-controll-button{
+            width: 880px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+    }
+  
+}

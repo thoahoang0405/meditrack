@@ -1,10 +1,10 @@
 <template>
   <div
     class="m-combobox"
-    @click="toggleCombobox"
-    @keydown.enter.stop="selectItem"
-    @keyup.down="keyDown"
-    @keyup.up="keyUp"
+   v-on:click="toggleCombobox"
+   v-on:keydown.enter.stop="selectItem"
+   v-on:keyup.down="keyDown"
+   v-on:keyup.up="keyUp"
     v-outside="hideCbb"
   >
     <input
@@ -13,9 +13,9 @@
       :placeholder="this.placeholder"
       :tabindex="tab"
       :class="border"
-      @blur="onBlur"
-      @keydown="keyTab"
-      @focus="onFocusCbb"
+      v-on:blur="onBlur"
+      v-on:keydown="keyTab"
+     v-on:focus="onFocusCbb"
       :ref="refName"
     />
 
@@ -31,7 +31,7 @@
           v-for="(item, index) of dataItems"
           class="drop-down-item"
           :class="item[fieldCode] == currentItem[fieldCode] ? 'active' : ''"
-          @click.exact.stop="onClickItem(item)"
+          v-on:click.exact.stop="onClickItem(item)"
           :key="item"
         >
           <div class="icon-tick">
@@ -267,10 +267,10 @@ export default {
     
     var i= this.$refs.refName
     console.log(i);
-    this.emitter.on("focus", () => {
-      this.$el.querySelector(".input").focus()
-        // this.$el.querySelector(".input").focus();
-    });
+    // this.emitter.on("focus", () => {
+    //   this.$el.querySelector(".input").focus()
+    //     // this.$el.querySelector(".input").focus();
+    // });
     // xét giá trị ban đầu cho combobox
     this.currentItem[this.fieldCode] = this.code;
 
@@ -328,8 +328,12 @@ export default {
 .m-combobox .up-down {
   position: absolute;
   right: 19px;
-  /* top: 50%; */
+  top: 50%;
   transform: translateY(-50%);
   justify-content: center;
+  z-index: 10;
+}
+.input {
+    margin-right: 0px !important;
 }
 </style>

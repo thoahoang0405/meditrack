@@ -22,7 +22,7 @@
           <span class="icon icon-search-black"></span>
         </div>
       </div>
-      <button class="btn button-blue">+ Nhập đơn thuốc</button>
+      <button class="btn button-blue" @click="showAdd()">+ Thêm hồ sơ</button>
     </div>
 
     <div class="main">
@@ -346,11 +346,14 @@
           </table>
         </div>
       </div>
+    
     </div>
+    <Form v-if="isShowAdd==true" @closeFormST1="isShowAdd=false"></Form>
   </div>
 </template>
 
 <script>
+import Form from "./RecordAdd.vue"
 import Paginate from "vuejs-paginate-next";
 import MSFunction from "../../../js/common/function";
 import { TableRecord } from "../../../js/common/table";
@@ -364,6 +367,7 @@ import {
 export default {
   components: {
     Paginate,
+    Form
   },
   name: "Record-page",
   props: {
@@ -371,6 +375,7 @@ export default {
   },
   data() {
     return {
+      isShowAdd:false,
       message: "",
       isShowContextMenu: false,
       posTop: 10,
@@ -456,6 +461,9 @@ export default {
     this.getPagingAsset();
   },
   methods: {
+    showAdd(){
+      this.isShowAdd=!this.isShowAdd
+    },
     images(e) {
       e.map((res) => console.log(res));
     },

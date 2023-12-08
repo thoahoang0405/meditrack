@@ -22,7 +22,7 @@
           <span class="icon icon-search-black"></span>
         </div>
       </div>
-      <button class="btn button-blue">+ Nhập đơn thuốc</button>
+      <button class="btn button-blue" @click="show()">+ Nhập đơn thuốc</button>
     </div>
 
     <div class="main">
@@ -38,7 +38,7 @@
 
                 <th>{{ tableInfo.prescriptionName }}</th>
                 <th class="text-center">{{ tableInfo.PrescriptionDate }}</th>
-                <th> {{ tableInfo.CreatedByDoctor }}</th>
+                <th>{{ tableInfo.CreatedByDoctor }}</th>
                 <th>{{ tableInfo.PrescriptionStatus }}</th>
                 <th>{{ tableInfo.CreatedByAddress }}</th>
                 <th>{{ tableInfo.Diagnose }}</th>
@@ -49,7 +49,7 @@
                   </div>
                 </th>
                 <th class="text-center">{{ tableInfo.ToDate }}</th>
-                <th v-if="model.user!=1">{{ tableInfo.PatientName }}</th>
+                <th v-if="model.user != 1">{{ tableInfo.PatientName }}</th>
                 <th>{{ tableInfo.function }}</th>
               </tr>
             </thead>
@@ -111,8 +111,7 @@
                     box-sizing: border-box;
                   "
                 >
-                {{ asset.CreatedByDoctor }}
-
+                  {{ asset.CreatedByDoctor }}
                 </td>
                 <td
                   style="
@@ -120,8 +119,9 @@
                     max-width: 90px;
                     box-sizing: border-box;
                   "
+                  :class="genderClass(asset.PrescriptionStatus)"
                 >
-                  {{ asset.PrescriptionStatus }}
+                  {{ formatEnum(asset.PrescriptionStatus)  }}
                 </td>
 
                 <td
@@ -163,14 +163,15 @@
                   {{ asset.ToDate }}
                 </td>
 
-                <td v-if="model.user!=1"
+                <td
+                  v-if="model.user != 1"
                   style="
                     min-width: 104px;
                     max-width: 104px;
                     box-sizing: border-box;
                   "
                 >
-                {{ asset.PatientName }}
+                  {{ asset.PatientName }}
                 </td>
                 <td
                   style="
@@ -204,7 +205,7 @@
                     </div>
                   </div>
                 </td>
-                
+
                 <td
                   colspan="2"
                   style="
@@ -253,17 +254,11 @@
                 ></td>
                 <td
                   colspan="1"
-                  style="
-                    min-width: 90px;
-                    box-sizing: border-box;
-                  "
+                  style="min-width: 90px; box-sizing: border-box"
                 ></td>
                 <td
                   colspan="1"
-                  style="
-                    min-width: 90px;
-                    box-sizing: border-box;
-                  "
+                  style="min-width: 90px; box-sizing: border-box"
                 ></td>
                 <td
                   colspan="1"
@@ -281,15 +276,15 @@
                     >
                       <div class="content-page">
                         {{ pageDefault }} bản ghi trên trang
-                         <div class="up-down" @click="btnDropUp"> 
-                        <div
-                          class="down"
-                          :class="isShowPage == true ? 'show' : ''"
-                          @click="btnDropUp"
-                        >
-                          <div class="icon-down-bold icon"></div>
+                        <div class="up-down" @click="btnDropUp">
+                          <div
+                            class="down"
+                            :class="isShowPage == true ? 'show' : ''"
+                            @click="btnDropUp"
+                          >
+                            <div class="icon-down-bold icon"></div>
+                          </div>
                         </div>
-                        </div> 
                       </div>
                     </div>
                     <div class="dropup-page">
@@ -341,17 +336,28 @@
                 </td>
                 <td
                   colspan="1"
-                  style="
-                    min-width: 90px;
-                    box-sizing: border-box;
-                  "
+                  style="min-width: 90px; box-sizing: border-box"
                 ></td>
               </tr>
             </tfoot>
           </table>
         </div>
       </div>
+      <div class="notice">
+        <div class="notice-content">
+          <div class="text">
+            <div class="title-notice">Tổng số đơn thuốc đang sử dụng</div>
+            <div class="count">1</div>
+          </div>
+          <img
+            src="../../../assets/img/prescription-icon-16.jpg"
+            height="86"
+            alt=""
+          />
+        </div>
+      </div>
     </div>
+    <Form v-if="isShowForm == true" @closeForm="isShowForm = false"></Form>
   </div>
 </template>
 
@@ -359,10 +365,9 @@
 import Paginate from "vuejs-paginate-next";
 import MSFunction from "../../../js/common/function";
 import { Table } from "../../../js/common/table";
-import {
-  FormDetailMode,
-  CloseST,
-} from "../../../js/common/enumeration";
+import Form from "./PrescriptionForm.vue";
+
+import { FormDetailMode, CloseST } from "../../../js/common/enumeration";
 import {
   ErrorMsg,
   btnPopup,
@@ -370,15 +375,17 @@ import {
   NoticeMsg,
 } from "../../../js/common/resource";
 export default {
+  name: "Prescription-page",
   components: {
     Paginate,
+    Form,
   },
-  name: "Prescription-page",
   props: {
     msg: String,
   },
   data() {
     return {
+      isShowForm: false,
       message: "",
       isShowContextMenu: false,
       posTop: 10,
@@ -464,6 +471,55 @@ export default {
     this.getPagingAsset();
   },
   methods: {
+    show() {
+      this.isShowForm = !this.isShowForm;
+    },
+
+    showFormEdit(item) {
+      this.isShowForm = !this.isShowForm;
+    },
+    formatEnum(e) {
+      var text = "";
+      switch (e) {
+        case 1:
+          text = "Chưa sử dụng";
+          break;
+        case 2:
+          text = "Đang sử dụng";
+          break;
+        case 3:
+          text = "Đã hoàn thành";
+          break;
+        case 4:
+          text = "Bỏ lỡ";
+          break;
+
+        default:
+          break;
+      }
+      return text;
+    },
+    genderClass(e) {
+      var text = "";
+      switch (e) {
+        case 1:
+          text = "clr-green";
+          break;
+        case 2:
+          text = "clr-warning";
+          break;
+        case 3:
+          text = "clr-blue";
+          break;
+        case 4:
+          text = "clr-red";
+          break;
+
+        default:
+          break;
+      }
+      return text;
+    },
     images(e) {
       e.map((res) => console.log(res));
     },
@@ -1051,6 +1107,31 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.notice {
+  display: flex;
+  justify-content: end;
+}
+.notice-content {
+  width: 255px;
+  height: 128px;
+  background: #8ed1fc;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+}
+.notice-content .text {
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  padding-left: 10px;
+}
+.notice-content .title-notice {
+  font-size: 16px;
+}
+.notice-content .count {
+  font-size: 64px;
+  text-align: center;
+}
 li .page-item .active {
   background-color: black !important;
 }
@@ -1115,7 +1196,7 @@ tr .data:hover {
   background-color: #fff;
   margin-left: -2px;
   margin-top: -208px;
- 
+
   z-index: 10;
   border: 1px solid #bbb;
 }
@@ -1202,7 +1283,7 @@ tr .data:hover {
 }
 
 .page .icon.icon-down-bold {
- margin-right: 8px;
+  margin-right: 8px;
 }
 .down {
   height: 100%;
@@ -1212,7 +1293,7 @@ tr .data:hover {
   justify-content: center;
   align-items: center;
   margin-left: 64px;
-    margin-top: 32px;
+  margin-top: 32px;
 }
 .page .up-down {
   height: 100%;
@@ -1222,7 +1303,6 @@ tr .data:hover {
   transform: translateX(-50%);
   justify-content: center;
   align-items: center;
-  
 }
 @import url(./Prescription.scss);
 </style>

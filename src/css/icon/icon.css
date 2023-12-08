@@ -334,7 +334,7 @@
   cursor: pointer;
 }
 .icon-plus {
-  background: url("../../assets/icon/All-icon.svg") no-repeat -903px -111px;
+  background: url("../../assets/icon/qlts-icon.png") no-repeat -419px -419px;
 	width: 18px;
 	height: 18px;
 }
@@ -429,3 +429,39 @@ input[type="radio"]:checked::before {
 	width: 14px;
 	height: 18px;
 }
+.pres-icon{
+  background: url('../../assets/img/prescription-icon-16.jpg');
+  width: 30px;
+	height: 50px;
+}
+.icon-down-blue{
+  background: url('../../assets/icon/qlts-icon.svg') no-repeat -334px -293px;
+	width: 11px;
+	height: 7px;
+
+}
+.icon-up-blue{
+  background: url('../../assets/icon/qlts-icon.svg') no-repeat -290px -293px;
+	width: 11px;
+	height: 7px;
+
+}
+.icon-show{
+  background: url('../../assets/icon/Sprites.64af8f61.svg') no-repeat -1607px -410px;
+	width: 19px;
+	height: 12px;
+    
+}
+.icon-hide{
+  background: url('../../assets/icon/Sprites.64af8f61.svg') no-repeat -1652px -410px;
+  width: 19px;
+	height: 14px;
+}
+.icon-logout{
+  background: url('../../assets/icon/All-icon.svg') no-repeat -463px -243px;
+	width: 17px;
+	height: 19px;
+  top:10px;
+  left:28px;
+}
+

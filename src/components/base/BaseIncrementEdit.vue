@@ -1,4 +1,4 @@
-<template>
+<template>hideFormEdit
   <div
     id="form"
     @keyup.esc="hideFormEdit"
