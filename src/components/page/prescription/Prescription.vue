@@ -55,7 +55,7 @@
             </thead>
 
             <tbody>
-              <tr style="border: none" class="data" v-if="totalRecord == 0">
+              <tr style="border: none" class="data" v-if="totalRecord == 0" >
                 <td colspan="11" class="noData">
                   <div class="no-data">
                     <div class="icon-noData"></div>
@@ -68,7 +68,7 @@
                 ref="rowCheck"
                 v-for="(asset, index) of prescriptions"
                 :key="asset.prescription_id"
-                :class="listPrescription.includes(asset) ? 'active' : ''"
+                :class="asset.PrescriptionStatus==2 ? 'active-blue' : ''"
                 @dblclick="showFormEdit(asset)"
                 @contextmenu="onClickContextMenu(asset, $event)"
                 @mousedown.prevent.ctrl="mouseDown(asset)"
@@ -1303,6 +1303,9 @@ tr .data:hover {
   transform: translateX(-50%);
   justify-content: center;
   align-items: center;
+}
+.active-blue{
+  background-color: #f0faff;
 }
 @import url(./Prescription.scss);
 </style>

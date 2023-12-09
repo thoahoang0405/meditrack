@@ -17,7 +17,7 @@
         <div class="step mt-2">Bước 3: Nhập thông tin điều trị</div>
         <div class="form-main">
           <div class="group-controll">
-            <div class=" mr-2 w-100">
+            <div class=" mr-2 gr-item w-100">
               <div class="label">Mô tả điều trị</div>
               <input class="mt-1 w-100" type="text" />
             </div>
@@ -32,24 +32,24 @@
             
           </div>
           <div class="group-controll mt-2">
-            <div class="gr-item mr-2">
+            <div class="gr-item w-50 mr-2">
               <div class="label">Ngày điều trị</div>
               <input class="mt-1 w-100" type="date" />
             </div>
-            <div class="gr-item ml-2 mr-2">
+            <div class="gr-item w-50 ml-2 mr-2">
               <div class="label">Tên đơn thuốc</div>
               <input class="mt-1 w-100" type="text" />
             </div>
           </div>
          
           <div class="group-controll mt-2">
-            <div class="w-100 mr-2">
+            <div class="w-100 gr-item mr-2">
               <div class="label">Chẩn đoán</div>
               <input class="mt-1 w-100" type="text" />
             </div>
           </div>
           <div class="group-controll mt-2">
-            <div class="w-100 mr-2">
+            <div class="w-100 gr-item mr-2">
               <div class="label">Ghi chú</div>
               <input class="mt-1 w-100" type="text" />
             </div>
@@ -120,13 +120,13 @@
   .form-add .form-treat {
     margin: 0px;
     width: 750px;
-    height: 512px;
+    height: 540px;
     background-color: #fff;
     padding: 20px;
   }
   
   .form-treat .gr-item {
-    width: 50%;
+   position: relative;
   }
  .form-treat  .label {
     font-weight: bold;

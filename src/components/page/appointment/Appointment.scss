@@ -120,8 +120,15 @@
   .list-app {
     display: flex;
     flex-wrap: wrap;
-   max-height:100%;
+    max-height:100%;
     overflow-y: auto;
+  }
+  .group-patient{
+    .title-gr{
+      display: flex;
+      color: #07A6FF;
+      font-weight: bold;
+    }
   }
 
   .notice {
