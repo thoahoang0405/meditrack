@@ -40,7 +40,7 @@
           </div>
         </div>
         <div class="group-controll mt-2">
-          <div class="gr-item w-50 ml-2">
+          <div class="gr-item " :class="editMode==2?'w-50 mr-2':'w-100'">
                 <div class="label">Cuộc hẹn cho</div>
                 <div  class="mt-1 w-100">
                     <Combobox
@@ -54,13 +54,13 @@
                 </div>
             </div>
           
-          <div class="gr-item w-50 ml-2">
+          <div class="gr-item w-50 ml-2" v-if="editMode==2">
             <div class="label">Trạng thái cuộc hẹn</div>
             <div class=" mb-1" style="display: flex;">
-          <input class="mr-1 mt-2" type="radio" value="3" v-model="appointments.AppointmentStatus" />
+          <input class="mr-1 mt-1" type="radio" value="3" v-model="appointments.AppointmentStatus" />
           <p class="mr-2" for="1">Đã hoàn thành</p>
-          <input class="mr-1 mt-2" type="radio" value="4"  v-model="appointments.AppointmentStatus" />
-          <p for="2">Bỏ lỡ</p>
+          <input class="mr-1 mt-1" type="radio" value="4"  v-model="appointments.AppointmentStatus" />
+          <p for="2" >Bỏ lỡ</p>
         </div>
           </div>
         </div>
@@ -133,18 +133,20 @@
 import Combobox from "../../base/BaseCombobox.vue";
 import axios from "axios";
 export default {
-  props: ["data"],
+  props: ["data","formMode"],
   components: {
     Combobox,
   },
   data() {
     return {
+      editMode:1,
         appointments:{
-          AppointmentID:'0000',
+          AppointmentID:'00000000-0000-0000-0000-000000000000',
+          UseID:'443f7b5d-99c2-11ee-bfeb-1866da3df2b8',
           AppointmentName:'',
           AppointmentDate:null,
           PatientName:'',
-          AppointmentStatus:0,
+          AppointmentStatus:1,
           DoctorName:'',
           DoctorPhoneNumber:'',
           Address:'',
@@ -183,7 +185,8 @@ export default {
     };
   },
   created() {
-    this.appointment= this.data
+    this.appointments= this.data
+    this.editMode= this.formMode
     this.getComboboxPatient()
 },
 mounted() {
@@ -218,8 +221,37 @@ mounted() {
     
     },
     save(){
+      var me= this
+  //validate
+  if(me.editMode==1){
+    var url="https://localhost:44371/api/Appoinments"
+    axios({
+      url: `${url}`,
+      method: "post",
+      data: me.appointments,
+    })
+      .then(function (res) {
+        me.$emit("closeForm", false);
+      })
+      .catch(function (res) {
+        console.log(res);
+      });
+
+  }else{
+    var url="https://localhost:44371/api/Appoinments"
+    axios({
+      url: `${url}/${me.appointments.AppointmentID}`,
+      method: "put",
+      data: me.appointments,
+    })
+      .then(function (res) {
+        me.$emit("closeForm", false);
+      })
+      .catch(function (res) {
+        console.log(res);
+      });
+  }
       
-      console.log(this.appointments)
     },
   
  

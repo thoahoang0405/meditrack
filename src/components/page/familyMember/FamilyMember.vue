@@ -12,15 +12,15 @@
     </div>
 
     <div class="main">
-      <div class="list-app mt-2">
+      <div class="list-app ">
         <div
           class="item-app mr-2 mr-1 mt-2"
           v-for="(item, index) in listFamily"
           :key="index"
         >
-          <div class="title-item">{{ item.FullName }}</div>
+          <div class="title-item">{{ item.PatientName }}</div>
           <div class="main-item">
-            <div class="avatar clr-warning">HA</div>
+            <div class="avatar clr-warning">NA</div>
             <div>
               <div class="content mt-2">
                 <div class="title">Mối quan hệ:</div>
@@ -45,6 +45,7 @@
 
 <script>
 import Form from "./FamilyMemberForm.vue";
+import axios from "axios";
 export default {
   name: "Family-page",
   components: {
@@ -68,9 +69,23 @@ export default {
       ],
     };
   },
+  created() {
+    this.getFamily()
+  },
   methods: {
     showForm() {
       this.isShowForm = !this.isShowForm;
+    },
+    getFamily() {
+      var url = "https://localhost:44371/api/FamilyMembers";
+      axios
+        .get(`${url}`)
+        .then((response) => {
+          this.listFamily = response.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
   },
 };

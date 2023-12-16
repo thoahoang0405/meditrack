@@ -766,7 +766,7 @@ export default {
     },
   
     getPagingAsset() {
-      debugger
+
       var me = this;
       me.isShowLoad = true;
       var url="https://localhost:44371/api/Prescriptions/Filter"

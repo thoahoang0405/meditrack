@@ -4,9 +4,9 @@
       <div class="title">
         <h2 class="mr-2 mb-2">Theo dõi cuộc hẹn y tế</h2>
         <div class="radio-user mb-1">
-          <input class="mr-1" type="radio" value="1" v-model="model.user" />
+          <input class="mr-1" type="radio" value="1" v-model="user" />
           <label class="mr-2" for="1">Tôi</label>
-          <input class="mr-1" type="radio" value="2" v-model="model.user" />
+          <input class="mr-1" type="radio" value="2" v-model="user"  />
           <label for="2">Gia đình</label>
         </div>
       </div>
@@ -22,24 +22,33 @@
           <span class="icon icon-search-black"></span>
         </div>
       </div>
-      <button class="btn button-blue" @click="showForm()">+ Lên lịch cuộc hẹn</button>
+      <button class="btn button-blue" @click="showForm()">
+        + Lên lịch cuộc hẹn
+      </button>
     </div>
 
     <div class="main">
-      <div style="height:calc(100% - 80px) ; ">
-        <div class="group-patient mt-2 " v-for="patient,index in patients" :key="index">
-          <div class="title-gr" v-if="model.user!=1">
-
-            <div class="icon icon-down-blue mr-2 mt-1"></div> 
-            <div class="name-patient">{{patient.PatientName}}</div>
+      <div style="height: calc(100% - 80px)">
+        <div
+          class="group-patient mt-2"
+          v-for="(patient, index) in patients"
+          :key="index"
+        >
+          <div class="title-gr" v-if="user != 1">
+            <div class="icon icon-down-blue mr-2 mt-1"></div>
+            <div class="name-patient mt-1">{{ patient.PatientName }}</div>
           </div>
-          <div class="list-app">              
-            <div class="item-app mr-2 mr-1 mt-2" v-for="(item,index) in patient.listAppointments" :key="index">
+          <div class="list-app">
+            <div
+              class="item-app mr-2 mr-1 mt-2"
+              v-for="(item, index) in patient.listAppointments"
+              :key="index"
+            >
               <div class="title-item">Cuộc hẹn: {{ item.AppointmentName }}</div>
               <div class="main-item">
                 <div class="content mt-2">
                   <div class="title">Ngày dự kiến:</div>
-                  <span>{{ item.AppointmentDate }}</span>
+                  <span>{{ formatDate(item.AppointmentDate) }}</span>
                 </div>
                 <div class="content mt-1">
                   <div class="title">Địa điểm:</div>
@@ -53,23 +62,30 @@
                   <div class="title">Số điện thoại:</div>
                   <span>{{ item.DoctorPhoneNumber }}</span>
                 </div>
-                <div class="content mt-1" v-if="model.user!=1">
+                <div class="content mt-1" v-if="user != 1">
                   <div class="title">Cuộc hẹn của:</div>
                   <span>{{ item.PatientName }}</span>
                 </div>
-    
-                <div class="status" :class="genderClass(item.AppointmentStatus)" >{{ formatEnum(item.AppointmentStatus) }}</div>
+
+                <div
+                  class="status"
+                  :class="genderClass(item.AppointmentStatus)"
+                >
+                  {{ formatEnum(item.AppointmentStatus) }}
+                </div>
               </div>
               <div class="footer-item">
-                <button class="btn delete-btn" @click="deleteAppointment">Huỷ bỏ</button>
-                <button class="btn update-btn" @clcik="showFormEdit(item)" >Cập nhật</button>
+                <button class="btn delete-btn" @click="deleteAppointment">
+                  Huỷ bỏ
+                </button>
+                <button class="btn update-btn" @click="showFormEdit(item)">
+                  Cập nhật
+                </button>
               </div>
             </div>
-
           </div>
-
         </div>
-        </div>
+      </div>
       <div class="notice mt-2 mr-2">
         <div class="notice-content">
           <div class="icon notice-blue mr-1"></div>
@@ -77,265 +93,260 @@
         </div>
       </div>
     </div>
-    <Form v-if="isShowForm" @closeForm="isShowForm=false" :data="appointment"></Form>
+    <Form
+      v-if="isShowForm"
+      @closeForm="isShowForm = false"
+      :data="appointment"
+      :formMode="formMode"
+    ></Form>
     <Popup
       v-if="isShowPopup"
       :msg="msgError"
       :name="btnName"
+
       :close="1"
-      @hidePopup="isShowPopup=false"
+      @hidePopup="isShowPopup = false"
       @isDelete="deleteAppointment()"
     ></Popup>
   </div>
 </template>
 
 <script>
-import Form from './AppointmentAdd.vue'
+import Form from "./AppointmentAdd.vue";
 import Popup from "../../base/BasePopup.vue";
-import axios from 'axios'
+import axios from "axios";
+import MSFunction from "../../../js/common/function";
 export default {
   name: "Appointment-page",
   props: {
     msg: String,
   },
-  components:{
-    Form,Popup
+  components: {
+    Form,
+    Popup,
   },
   data() {
     return {
-      btnName:"Có",
-      msgError:"Bạn có chắc chắn muốn xoá <strong>cuộc hẹn</strong> này không?",
-      isShowPopup:false,
-      appointment:{},
-      isShowForm:false,
-      model: {
+      formMode:1,
+      btnName: "Có",
+      msgError:
+        "Bạn có chắc chắn muốn xoá <strong>cuộc hẹn</strong> này không?",
+      isShowPopup: false,
+      appointment: {},
+      isShowForm: false,
+      
         user: 1,
-      },
+     
+      listPatient: [],
       patients: [
-        {
-          PatientId: "7343483484",
-          PatientName: "Nguyễn Văn A",
-          listAppointments:[
-          {
-          AppointmentID:"111111",
-          AppointmentName: "Khám sức khoẻ định kỳ",
-          AppointmentDate:"12/12/2023",
-          AppointmentStatus:1,
-          PatientName:'Nguyễn Văn A',
-          PatientId: "7343483484",
-          DoctorPhoneNumber:"939377373",
-          DoctorName:"Kiều Văn Khương",
-          Address :"Hà nội",
-          Description:"Từ 9h đến 10h"
-        },
-        {
-          AppointmentID:"111786671",
-          AppointmentName: "Khám sức khoẻ định kỳ",
-          AppointmentDate:"12/12/2023",
-          AppointmentStatus:2,
-          PatientId: "7343483484",
-          PatientName:'Nguyễn Văn A',
-          DoctorPhoneNumber:"939377373",
-          DoctorName:"Kiều Văn Khương",
-          Address :"Hà nội",
-          Description:"Từ 9h đến 10h"
-        },
-        {
-          AppointmentID:"133111",
-          AppointmentName: "Khám sức khoẻ định kỳ",
-          AppointmentDate:"12/12/2023",
-          AppointmentStatus:3,
-          PatientId: "7343483484",
-          PatientName:'Nguyễn Văn A',
-          DoctorPhoneNumber:"939377373",
-          DoctorName:"Kiều Văn Khương",
-          Address :"Hà nội",
-          Description:"Từ 9h đến 10h"
-        },
-          ]
-        },
-        {
-          PatientId: "7343483444",
-          PatientName: "Nguyễn Văn B",
-          listAppointments:[
-          {
-          AppointmentID:"111133",
-          AppointmentName: "Khám sức khoẻ định kỳ",
-          AppointmentDate:"12/12/2023",
-          AppointmentStatus:4,
-          PatientId: "7343483444",
-          PatientName:'Nguyễn Văn B',
-          DoctorPhoneNumber:"939377373",
-          DoctorName:"Kiều Văn Khương",
-          Address :"Hà nội",
-          Description:"Từ 9h đến 10h"
-        },
-        {
-          AppointmentID:"1114411",
-          AppointmentName: "Khám sức khoẻ định kỳ",
-          AppointmentDate:"12/12/2023",
-          AppointmentStatus:1,
-          PatientId: "7343483444",
-          PatientName:'Nguyễn Văn B',
-          DoctorPhoneNumber:"939377373",
-          DoctorName:"Kiều Văn Khương",
-          Address :"Hà nội",
-          Description:"Từ 9h đến 10h"
-        },
-          ]
-        },
+      
       ],
       listAppointment: [
         {
-          AppointmentID:"111111",
+          AppointmentID: "111111",
           AppointmentName: "Khám sức khoẻ định kỳ",
-          AppointmentDate:"12/12/2023",
-          AppointmentStatus:1,
-          PatientName:'Nguyễn Văn A',
+          AppointmentDate: "12/12/2023",
+          AppointmentStatus: 1,
+          PatientName: "Nguyễn Văn A",
           PatientId: "7343483484",
-          DoctorPhoneNumber:"939377373",
-          DoctorName:"Kiều Văn Khương",
-          Address :"Hà nội",
-          Description:"Từ 9h đến 10h"
+          DoctorPhoneNumber: "939377373",
+          DoctorName: "Kiều Văn Khương",
+          Address: "Hà nội",
+          Description: "Từ 9h đến 10h",
         },
         {
-          AppointmentID:"111786671",
+          AppointmentID: "111786671",
           AppointmentName: "Khám sức khoẻ định kỳ",
-          AppointmentDate:"12/12/2023",
-          AppointmentStatus:2,
+          AppointmentDate: "12/12/2023",
+          AppointmentStatus: 2,
           PatientId: "7343483484",
-          PatientName:'Nguyễn Văn A',
-          DoctorPhoneNumber:"939377373",
-          DoctorName:"Kiều Văn Khương",
-          Address :"Hà nội",
-          Description:"Từ 9h đến 10h"
+          PatientName: "Nguyễn Văn A",
+          DoctorPhoneNumber: "939377373",
+          DoctorName: "Kiều Văn Khương",
+          Address: "Hà nội",
+          Description: "Từ 9h đến 10h",
         },
         {
-          AppointmentID:"133111",
+          AppointmentID: "133111",
           AppointmentName: "Khám sức khoẻ định kỳ",
-          AppointmentDate:"12/12/2023",
-          AppointmentStatus:3,
+          AppointmentDate: "12/12/2023",
+          AppointmentStatus: 3,
           PatientId: "7343483484",
-          PatientName:'Nguyễn Văn A',
-          DoctorPhoneNumber:"939377373",
-          DoctorName:"Kiều Văn Khương",
-          Address :"Hà nội",
-          Description:"Từ 9h đến 10h"
+          PatientName: "Nguyễn Văn A",
+          DoctorPhoneNumber: "939377373",
+          DoctorName: "Kiều Văn Khương",
+          Address: "Hà nội",
+          Description: "Từ 9h đến 10h",
         },
         {
-          AppointmentID:"111133",
+          AppointmentID: "111133",
           AppointmentName: "Khám sức khoẻ định kỳ",
-          AppointmentDate:"12/12/2023",
-          AppointmentStatus:4,
+          AppointmentDate: "12/12/2023",
+          AppointmentStatus: 4,
           PatientId: "7343483444",
-          PatientName:'Nguyễn Văn B',
-          DoctorPhoneNumber:"939377373",
-          DoctorName:"Kiều Văn Khương",
-          Address :"Hà nội",
-          Description:"Từ 9h đến 10h"
+          PatientName: "Nguyễn Văn B",
+          DoctorPhoneNumber: "939377373",
+          DoctorName: "Kiều Văn Khương",
+          Address: "Hà nội",
+          Description: "Từ 9h đến 10h",
         },
         {
-          AppointmentID:"1114411",
+          AppointmentID: "1114411",
           AppointmentName: "Khám sức khoẻ định kỳ",
-          AppointmentDate:"12/12/2023",
-          AppointmentStatus:1,
+          AppointmentDate: "12/12/2023",
+          AppointmentStatus: 1,
           PatientId: "7343483444",
-          PatientName:'Nguyễn Văn B',
-          DoctorPhoneNumber:"939377373",
-          DoctorName:"Kiều Văn Khương",
-          Address :"Hà nội",
-          Description:"Từ 9h đến 10h"
+          PatientName: "Nguyễn Văn B",
+          DoctorPhoneNumber: "939377373",
+          DoctorName: "Kiều Văn Khương",
+          Address: "Hà nội",
+          Description: "Từ 9h đến 10h",
         },
-       
       ],
       error: {
-        AppointmentName:''
+        AppointmentName: "",
       },
       rules: {
-        AppointmentName:''
+        AppointmentName: "",
       },
-      
     };
   },
   created() {
-    this.getAppointment()
+    this.getAppointment();
+    this.getComboboxPatient();
   },
- 
+  watch: {
+   
+    user: function () {
+      if (this.user == 1) {
+        this.getAppointment()
+      }else{
+        this.getAppointment()
+      }
+    },
+
+    
+  },
   methods: {
-    deleteAppointment(){
-      this.isShowPopup= !this.isShowPopup
+    formatDate(date) {
+      return MSFunction.formatDate(date);
     },
-    showForm(){
-      this.isShowForm = !this.isShowForm
+    deleteAppointment() {
+      this.isShowPopup = !this.isShowPopup;
     },
-    showFormEdit(item){
-      this.isShowForm = !this.isShowForm
-      this.appointment=item
+    showForm() {
+      this.isShowForm = !this.isShowForm;
+      this.formMode=1
     },
-    formatEnum(e){
-      var text=''
+    showFormEdit(item) {
+      debugger
+      this.isShowForm = !this.isShowForm;
+      this.appointment = item;
+      this.formMode=2
+    },
+    formatEnum(e) {
+      var text = "";
       switch (e) {
         case 1:
-        text= 'Mới tạo'
-        // el[0].classList.add('clr-green')
+          text = "Mới tạo";
+        
           break;
-          case 2:
-          text= 'Sắp tới'
-          // el[0].classList.add('clr-warning')
+        case 2:
+          text = "Sắp tới";
           break;
-          case 3:
-          text= 'Đã hoàn thành'
-          // el[0].classList.add('clr-blue')
+        case 3:
+          text = "Đã hoàn thành";
           break;
-          case 4:
-          // el[0].classList.add('clr-red')
-          text= 'Bỏ lỡ'
+        case 4:
+          text = "Bỏ lỡ";
           break;
-         
+
         default:
           break;
       }
       return text;
     },
-    genderClass(e){
-      var text=''
+    genderClass(e) {
+      var text = "";
       switch (e) {
         case 1:
-        text= 'clr-green'
+          text = "clr-green";
           break;
-          case 2:
-          text= 'clr-warning'
+        case 2:
+          text = "clr-warning";
           break;
-          case 3:
-          text= 'clr-blue'
+        case 3:
+          text = "clr-blue";
           break;
-          case 4:
-          text= 'clr-red'
+        case 4:
+          text = "clr-red";
           break;
-         
+
         default:
           break;
       }
       return text;
+    },
+    getComboboxPatient() {
+      var url = "https://localhost:44371/api/FamilyMembers";
+      axios
+        .get(`${url}`)
+        .then((response) => {
+          this.listPatient = response.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
     getAppointment() {
+      debugger;
       var me = this;
       axios
         .get("https://localhost:44371/api/Appoinments")
         .then(function (res) {
           if (res.data.length > 0) {
-            me.listAppointment=res.data
+            me.listAppointment = res.data;
+            me.patients=[]
+            if (me.user != 1) {
+              var appointment = me.listAppointment.filter(
+                (item) => item.PatientID != null
+              );
+              for (let i = 0; i < me.listPatient.length; i++) {
+                const el = me.listPatient[i];
+                me.listPatient[i].listAppointments = appointment.filter(
+                  (item) => item.PatientID == el.PatientID
+                );
+                if (
+                  me.listPatient[i].listAppointments &&
+                  me.listPatient[i].listAppointments.length > 0
+                ) {
+                  me.patients.push(me.listPatient[i]);
+                }
+              }
+            } else {
+              var appointment = me.listAppointment.filter(
+                (item) => item.PatientID == null || item.PatientName == ""
+              );
+              me.patients.push({ PatientID: null, PatientName: "",listAppointments:[] });
+              if (appointment && appointment.length > 0) {
+                for (let i = 0; i < appointment.length; i++) {
+                  const el = appointment[i];
+                  me.patients[0].listAppointments.push(el) ;
+                }
+              }
+            }
           }
         })
         .catch(function (error) {
           console.log(error);
         });
-      },
-       /**
+    },
+
+    /**
      * hàm check validate tổng
      * AUTHOR: HTTHOA(9/03/2023)
      */
-     validateAll() {
+    validateAll() {
       let isValidAll = true; // biến check lỗi tổng
       for (const propName in this.rules) {
         let isValid = true; // biến check lỗi khi duyệt qua 1 trường dữ liệu
@@ -396,10 +407,10 @@ export default {
      * validate bắt buộc nhập
      * AUTHOR: HTTHOA(9/03/2023)
      */
-     validateRequired(value, propName) {
+    validateRequired(value, propName) {
       // kiểm tra rỗng thì lưu lại lỗi và trả về false
       if (!this.appointments[propName]) {
-        this.error[propName] = 'không được để trống';
+        this.error[propName] = "không được để trống";
 
         return false;
       } else {
@@ -407,9 +418,8 @@ export default {
         return true;
       }
     },
-  
-}
-}
+  },
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
