@@ -13,22 +13,22 @@
             <div class="group-controll">
                 <div class="w-50 mr-2">
                 <div class="label">Tên đơn thuốc</div>
-                <input class="mt-1 w-100" type="text" />
+                <input class="mt-1 w-100" type="text" v-model="prescriptions.PrescriptionName" />
               </div>
               <div class="w-25 mr-2 ml-2">
                 <div class="label">Ngày y lệnh</div>
-                <input class="mt-1 w-100" type="date" />
+                <input class="mt-1 w-100" type="date" v-model="prescriptions.PrescriptionDate" />
               </div>
               <div class="w-25 ml-2">
                 <div class="label">Đơn thuốc cho</div>
                 <div class="mt-1 w-100">
                   <Combobox
                     class="item-input check-input"
-                    :items="patients"
-                    :code="'PatientName'"
-                    :fieldCode="'PatientName'"
+                    :items="patients"                   
+                    :fieldCode="'PatientID'"
                     :fieldName="'PatientName'"
-                  />
+                    @selectedItem="selectItemCbb"
+                  :value="prescriptions.PatientName" />
                 </div>
               </div>
             </div>       
@@ -36,39 +36,39 @@
                 <div class="w-25 ml-2">
                 <div class="label">Trạng thái đơn thuốc</div>
                 <div class="mb-1" style="display: flex">
-                  <input class="mr-1 mt-2" type="radio" value="3" />
+                  <input class="mr-1 mt-2" type="radio" value="3" v-model="prescriptions.PrescriptionStatus" />
                   <p class="mr-2" for="1">Đã hoàn thành</p>
-                  <input class="mr-1 mt-2" type="radio" value="4" />
+                  <input class="mr-1 mt-2" type="radio" value="4" v-model="prescriptions.PrescriptionStatus" />
                   <p for="2">Bỏ lỡ</p>
                 </div>
               </div>
               <div class="w-25 mr-2">
                 <div class="label">Bác sĩ chỉ định</div>
-                <input class="mt-1 w-100" type="text" />
+                <input class="mt-1 w-100" type="text" v-model="prescriptions.CreatedByDoctor" />
               </div>
               <div class="w-25 mr-2 ml-2">
                 <div class="label">Sử dụng từ ngày</div>
-                <input class="mt-1 w-100" type="date" />
+                <input class="mt-1 w-100" type="date" v-model="prescriptions.FromDate" />
               </div>
               <div class="w-25 ml-2">
                 <div class="label">Sử dụng đến ngày</div>
-                <input class="mt-1 w-100" type="date" />
+                <input class="mt-1 w-100" type="date" v-model="prescriptions.ToDate" />
               </div>
             </div>
             <div class="group-controll mt-2">
               <div class="w-50 mr-2">
                 <div class="label">Bệnh viện kê đơn</div>
-                <input class="mt-1 w-100" type="text" />
+                <input class="mt-1 w-100" type="text" v-model="prescriptions.CreatedByAddress" />
               </div>
               <div class="w-50 ml-2">
                 <div class="label">Gi chú</div>
-                <input class="mt-1 w-100" type="text" />
+                <input class="mt-1 w-100" type="text" v-model="prescriptions.Notes" />
               </div>
             </div>
             <div class="group-controll mt-2">
               <div class="w-100">
                 <div class="label">Chẩn đoán</div>
-                <input class="mt-1 w-100" type="text" />
+                <input class="mt-1 w-100" type="text" v-model="prescriptions.Diagnose" />
               </div>
             </div>
         </div>
@@ -91,7 +91,7 @@
                     <div class="item-table" style="min-width: 508px;">Ghi chú</div>
     
                 </div>
-                <div class="main-table mt-2 mb-2" v-for="item,index in listMedication" :key="index">
+                <div class="main-table mt-2 mb-2" v-for="item,index in prescriptions.Medications" :key="index">
                     <input class="item-table" type="text"  v-model="item.MedicationName" style="min-width: 150px;"/>
                     <input class="item-table" type="text" v-model="item.Unit" style="min-width: 80px;">
                     <input class="item-table" type="number" v-model="item.QuantityForMorning" style="min-width: 80px;">
@@ -118,7 +118,7 @@
 </template>
 <script>
 import Combobox from "../../base/BaseCombobox.vue";
-
+import axios from "axios"
 export default {
   props: ["data"],
   components: {
@@ -127,21 +127,25 @@ export default {
   data() {
     return {
         isShowDetail:true,
-        listMedication:[
-            {
-                MedicationID:"",
-                MedicationName:"",
-                QuantityForMorning:"",
-                QuantityForAfternoon:"",
-                Unit:"",
-                Notes:"",
-                RouteOfAdministration:"",
-                Warnings:"",
-                ExpiryDate:"",
-                SideEffects:"",
-            }
-        ],
-      appointment: {},
+        prescriptions:{
+
+          Medications:[
+              {
+                  MedicationID:"",
+                  MedicationName:"",
+                  QuantityForMorning:"",
+                  QuantityForAfternoon:"",
+                  Unit:"",
+                  Notes:"",
+                  RouteOfAdministration:"",
+                  Warnings:"",
+                  ExpiryDate:"",
+                  SideEffects:"",
+              }
+          ],
+        },
+        PatientName:'',
+        PatientID:'',
       patients: [
         {
           PatientId: "7343483484",
@@ -157,14 +161,25 @@ export default {
     };
   },
   created() {
-    this.appointment = this.data;
+    debugger
+    this.getComboboxPatient()
   },
   methods: {
+    
+     selectItemCbb(value) {
+      debugger
+      if (value.PatientName) {
+        this.PatientName = value.PatientName;
+      } else {
+        this.PatientName = "";
+      }
+    
+    },
     closeForm() {
       this.$emit("closeForm", false);
     },
     addRowDetail(){
-        this.listMedication.push({
+        this.Medications.push({
                 MedicationID:"",
                 MedicationName:"",
                 QuantityForMorning:"",
@@ -178,7 +193,19 @@ export default {
         })
     },
     removeDetail(item,index){
-        this.listMedication.splice(index,1)
+        this.Medications.splice(index,1)
+    },
+    getComboboxPatient(){
+    debugger
+      var url="https://localhost:44371/api/FamilyMembers"
+      axios
+        .get(`${url}`)
+        .then((response) => {
+          this.patients = response.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   },
 };

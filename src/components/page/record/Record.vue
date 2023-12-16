@@ -66,9 +66,9 @@
 
               <tr
                 ref="rowCheck"
-                v-for="(asset, index) of prescriptions"
-                :key="asset.prescription_id"
-                :class="listPrescription.includes(asset) ? 'active' : ''"
+                v-for="(asset, index) of records"
+                :key="asset.RecordID"
+                :class="listRecord.includes(asset) ? 'active' : ''"
                 @dblclick="showFormEdit(asset)"
                 @contextmenu="onClickContextMenu(asset, $event)"
                 @mousedown.prevent.ctrl="mouseDown(asset)"
@@ -144,7 +144,7 @@
                   "
                   class="text-center"
                 >
-                  {{ asset.TreatmentDate }}
+                  {{  formatDate(asset.TreatmentDate) }}
                 </td>
                 <td
                   style="
@@ -358,6 +358,7 @@ import Paginate from "vuejs-paginate-next";
 import MSFunction from "../../../js/common/function";
 import { TableRecord } from "../../../js/common/table";
 import { FormDetailMode, CloseST } from "../../../js/common/enumeration";
+import axios from "axios";
 import {
   ErrorMsg,
   btnPopup,
@@ -406,10 +407,10 @@ export default {
       pageNumber: 1,
       isActive: "20",
       pageDefault: 20,
-      prescriptions: [],
+      records: [],
       oldData: [],
       newCode: "",
-      listPrescription: [],
+      listRecord: [],
       prescription: {},
       prescriptionCategory: [],
       prescription_category_code: "",
@@ -448,7 +449,7 @@ export default {
       }
     },
 
-    prescriptions: function () {
+    records: function () {
       if (this.prescription.department_id == "") {
         this.getPagingAsset();
       }
@@ -461,6 +462,9 @@ export default {
     this.getPagingAsset();
   },
   methods: {
+    formatDate(date) {
+      return MSFunction.formatDate(date);
+    },
     showAdd(){
       this.isShowAdd=!this.isShowAdd
     },
@@ -503,14 +507,14 @@ export default {
     selectMultipleItem(item1, item2) {
       //đoạn này là lấy những tài sản khi kéo giữ chuột
       if (
-        this.prescriptions.includes(item1) &&
-        this.prescriptions.includes(item2)
+        this.records.includes(item1) &&
+        this.records.includes(item2)
       ) {
         // lấy vị trí của 2 item trong mảng prescription
         //start là vị trí đầu khi down ctrl
-        let startIndex = this.prescriptions.indexOf(item2);
+        let startIndex = this.records.indexOf(item2);
         //end là vị trí khi up ctrl
-        let endIndex = this.prescriptions.indexOf(item1);
+        let endIndex = this.records.indexOf(item1);
         // kiểm tra vị trí bắt đầu và kết thúc nếu bắt đầu lớn hơn kết thúc thì đổi lại
         if (startIndex > endIndex) {
           let tmp = startIndex;
@@ -521,8 +525,8 @@ export default {
         // thêm các item chưa có trong mảng xóa từ vị trí bắt đầu đến kết thúc
         for (let i = startIndex; i <= endIndex; i++) {
           //nếu trong danh sách chưa gồm tài sản đó thì push vào danh sách
-          if (!this.listPrescription.includes(this.prescriptions[i])) {
-            this.listPrescription.push(this.prescriptions[i]);
+          if (!this.listRecord.includes(this.records[i])) {
+            this.listRecord.push(this.records[i]);
           }
         }
       }
@@ -563,7 +567,7 @@ export default {
     closeContextMenu() {
       setTimeout(() => {
         this.isShowContextMenu = false;
-        this.listPrescription = [];
+        this.listRecord = [];
       }, 1000);
     },
     /**
@@ -648,7 +652,7 @@ export default {
     hidePopup(value) {
       this.isShowPopup = value;
       this.assetSelected = {};
-      this.listPrescription = [];
+      this.listRecord = [];
       this.oldData = [];
     },
     /**
@@ -656,7 +660,7 @@ export default {
      * AUTHOR: HTTHOA(88/03/2023)
      */
     onClickDelete() {
-      if (this.listPrescription.length < 1) {
+      if (this.listRecord.length < 1) {
         this.showPopup(true);
         this.msgError = ErrorMsg.NotChooseProperty;
         this.closeStatus = CloseST.DeleteCloseNotChoose;
@@ -709,192 +713,28 @@ export default {
      * lấy số bản ghi trên 1 trang số trang và tìm kiếm trên api
      * AUTHOR: HTTHOA(11/03/2023)
      */
-    getPagingAsset() {
-      var me = this;
+  
 
-      me.isShowLoad = false;
-      me.totalPage = 3;
-      me.totalRecord = 60;
-      me.totalImprover = 45545454;
-      me.totalCost = 54454554;
-      me.totalQuantity = 44;
-      me.prescriptions = [
-        {
-          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
-          MedicalExaminationAddress: "Bệnh viện quân y 103",
-          DoctorName: "Nguyễn Văn Nam",
-          FullName: "Nguyễn Ngọc Lan",
-          PrescriptionName: "Trị cảm cúm",
-          Diagnose: "Sốt",
-          TreatmentDate: "20/11/2023",
-          Notes: "",
-          patientName: "Nguyễn Văn A",
-        },
-        {
-          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
-          MedicalExaminationAddress: "Bệnh viện quân y 103",
-          DoctorName: "Nguyễn Văn Nam",
-          FullName: "Nguyễn Ngọc Lan",
-          PrescriptionName: "Trị cảm cúm",
-          Diagnose: "Sốt",
-          TreatmentDate: "20/11/2023",
-          Notes: "",
-          patientName: "Nguyễn Văn A",
-        },
-        {
-          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
-          MedicalExaminationAddress: "Bệnh viện quân y 103",
-          DoctorName: "Nguyễn Văn Nam",
-          FullName: "Nguyễn Ngọc Lan",
-          PrescriptionName: "Trị cảm cúm",
-          Diagnose: "Sốt",
-          TreatmentDate: "20/11/2023",
-          Notes: "",
-          patientName: "Nguyễn Văn A",
-        },
-        {
-          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
-          MedicalExaminationAddress: "Bệnh viện quân y 103",
-          DoctorName: "Nguyễn Văn Nam",
-          FullName: "Nguyễn Ngọc Lan",
-          PrescriptionName: "Trị cảm cúm",
-          Diagnose: "Sốt",
-          TreatmentDate: "20/11/2023",
-          Notes: "",
-          patientName: "Nguyễn Văn A",
-        },
-        {
-          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
-          MedicalExaminationAddress: "Bệnh viện quân y 103",
-          DoctorName: "Nguyễn Văn Nam",
-          FullName: "Nguyễn Ngọc Lan",
-          PrescriptionName: "Trị cảm cúm",
-          Diagnose: "Sốt",
-          TreatmentDate: "20/11/2023",
-          Notes: "",
-          patientName: "Nguyễn Văn A",
-        },
-        {
-          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
-          MedicalExaminationAddress: "Bệnh viện quân y 103",
-          DoctorName: "Nguyễn Văn Nam",
-          FullName: "Nguyễn Ngọc Lan",
-          PrescriptionName: "Trị cảm cúm",
-          Diagnose: "Sốt",
-          TreatmentDate: "20/11/2023",
-          Notes: "",
-          patientName: "Nguyễn Văn A",
-        },
-        {
-          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
-          MedicalExaminationAddress: "Bệnh viện quân y 103",
-          DoctorName: "Nguyễn Văn Nam",
-          FullName: "Nguyễn Ngọc Lan",
-          PrescriptionName: "Trị cảm cúm",
-          Diagnose: "Sốt",
-          TreatmentDate: "20/11/2023",
-          Notes: "",
-          patientName: "Nguyễn Văn A",
-        },
-        {
-          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
-          MedicalExaminationAddress: "Bệnh viện quân y 103",
-          DoctorName: "Nguyễn Văn Nam",
-          FullName: "Nguyễn Ngọc Lan",
-          PrescriptionName: "Trị cảm cúm",
-          Diagnose: "Sốt",
-          TreatmentDate: "20/11/2023",
-          Notes: "",
-          patientName: "Nguyễn Văn A",
-        },
-        {
-          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
-          MedicalExaminationAddress: "Bệnh viện quân y 103",
-          DoctorName: "Nguyễn Văn Nam",
-          FullName: "Nguyễn Ngọc Lan",
-          PrescriptionName: "Trị cảm cúm",
-          Diagnose: "Sốt",
-          TreatmentDate: "20/11/2023",
-          Notes: "",
-          patientName: "Nguyễn Văn A",
-        },
-        {
-          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
-          MedicalExaminationAddress: "Bệnh viện quân y 103",
-          DoctorName: "Nguyễn Văn Nam",
-          FullName: "Nguyễn Ngọc Lan",
-          PrescriptionName: "Trị cảm cúm",
-          Diagnose: "Sốt",
-          TreatmentDate: "20/11/2023",
-          Notes: "",
-          patientName: "Nguyễn Văn A",
-        },
-        {
-          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
-          MedicalExaminationAddress: "Bệnh viện quân y 103",
-          DoctorName: "Nguyễn Văn Nam",
-          FullName: "Nguyễn Ngọc Lan",
-          PrescriptionName: "Trị cảm cúm",
-          Diagnose: "Sốt",
-          TreatmentDate: "20/11/2023",
-          Notes: "",
-          patientName: "Nguyễn Văn A",
-        },
-        {
-          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
-          MedicalExaminationAddress: "Bệnh viện quân y 103",
-          DoctorName: "Nguyễn Văn Nam",
-          FullName: "Nguyễn Ngọc Lan",
-          PrescriptionName: "Trị cảm cúm",
-          Diagnose: "Sốt",
-          TreatmentDate: "20/11/2023",
-          Notes: "",
-          patientName: "Nguyễn Văn A",
-        }, {
-          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
-          MedicalExaminationAddress: "Bệnh viện quân y 103",
-          DoctorName: "Nguyễn Văn Nam",
-          FullName: "Nguyễn Ngọc Lan",
-          PrescriptionName: "Trị cảm cúm",
-          Diagnose: "Sốt",
-          TreatmentDate: "20/11/2023",
-          Notes: "",
-          patientName: "Nguyễn Văn A",
-        },
-        {
-          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
-          MedicalExaminationAddress: "Bệnh viện quân y 103",
-          DoctorName: "Nguyễn Văn Nam",
-          FullName: "Nguyễn Ngọc Lan",
-          PrescriptionName: "Trị cảm cúm",
-          Diagnose: "Sốt",
-          TreatmentDate: "20/11/2023",
-          Notes: "",
-          patientName: "Nguyễn Văn A",
-        },
-        {
-          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
-          MedicalExaminationAddress: "Bệnh viện quân y 103",
-          DoctorName: "Nguyễn Văn Nam",
-          FullName: "Nguyễn Ngọc Lan",
-          PrescriptionName: "Trị cảm cúm",
-          Diagnose: "Sốt",
-          TreatmentDate: "20/11/2023",
-          Notes: "",
-          patientName: "Nguyễn Văn A",
-        },
-        {
-          RecordName: "Hồ sơ khám sức khoẻ định kỳ",
-          MedicalExaminationAddress: "Bệnh viện quân y 103",
-          DoctorName: "Nguyễn Văn Nam",
-          FullName: "Nguyễn Ngọc Lan",
-          PrescriptionName: "Trị cảm cúm",
-          Diagnose: "Sốt",
-          TreatmentDate: "20/11/2023",
-          Notes: "",
-          patientName: "Nguyễn Văn A",
-        },
-      ];
+    getPagingAsset() {
+      debugger
+      var me = this;
+      me.isShowLoad = true;
+      var url="https://localhost:44371/api/Records/Filter"
+      axios({
+        url: `${url}?keyword=${this.txtSearch}&pageSize=${this.pageDefault}&pageNumber=${this.pageNumber}`,
+        method: "post",
+        data: [],
+      })
+        
+        .then(function (res) {
+          me.totalPage = res.data.TotalPages;
+          me.totalRecord = res.data.TotalRecords;
+          me.records = res.data.Data;
+         
+        })
+        .catch(function () {
+          console.log(1);
+        });
     },
     loadData() {
       this.pageNumber = 1;
@@ -981,18 +821,18 @@ export default {
       try {
         this.currentprescription = asset;
 
-        // this.indexFocus = this.prescriptions.indexOf(asset);
-        if (!this.listPrescription.includes(asset)) {
+        // this.indexFocus = this.records.indexOf(asset);
+        if (!this.listRecord.includes(asset)) {
           //thực hiện chọn
-          this.listPrescription.push(asset);
+          this.listRecord.push(asset);
         } else {
           //thực hiện bỏ chọn
-          this.listPrescription = this.listPrescription.filter((a) => {
+          this.listRecord = this.listRecord.filter((a) => {
             return a !== asset;
           });
 
           this.currentprescription =
-            this.listPrescription[this.listPrescription.length - 1];
+            this.listRecord[this.listRecord.length - 1];
         }
       } catch (err) {
         console.log(err);
@@ -1003,8 +843,8 @@ export default {
      * AUTHOR: HTTHOA(28/02/2023)
      */
     selectItem(asset) {
-      this.listPrescription = [];
-      this.listPrescription.push(asset);
+      this.listRecord = [];
+      this.listRecord.push(asset);
       this.currentprescription = asset;
     },
     /**
@@ -1013,10 +853,10 @@ export default {
      */
     selectedAllItem() {
       try {
-        if (this.listPrescription.length < this.prescriptions.length) {
-          this.listPrescription = this.prescriptions;
+        if (this.listRecord.length < this.records.length) {
+          this.listRecord = this.records;
         } else {
-          this.listPrescription = [];
+          this.listRecord = [];
         }
       } catch (err) {
         console.log(err);
@@ -1034,10 +874,10 @@ export default {
      * AUTHOR: HTTHOA(20/03/2023)
      */
     deleteMultiple() {
-      let listPrescriptionID = [];
+      let listRecordID = [];
       var me = this;
-      me.listPrescription.filter((asset) => {
-        listPrescriptionID.push(asset.prescription_id);
+      me.listRecord.filter((asset) => {
+        listRecordID.push(asset.prescription_id);
       });
     },
     /**
@@ -1048,54 +888,54 @@ export default {
       try {
         // kiểm tra danh sách được chọn có bao nhiêu bản ghi và hiển thị thông báo
 
-        if (this.listPrescription.length == 0) {
+        if (this.listRecord.length == 0) {
           this.showPopup(true);
           this.msgDelete = ErrorMsg.NotChooseProperty;
           this.closeStatus = CloseST.DeleteCloseNotChoose;
           this.btnName = btnPopup.ClosePop;
-        } else if (this.listPrescription.length == 1) {
+        } else if (this.listRecord.length == 1) {
           this.showPopup(true);
-          if (this.listPrescription[0].active == 0) {
+          if (this.listRecord[0].active == 0) {
             this.msgDelete = NoticeMsg.ConfirmDelet;
             this.closeStatus = CloseST.DeleteOne;
             this.btnName = btnPopup.Delete;
             this.btnNameLeft = btnPopup.No;
-            this.itemDelete = this.listPrescription[0].prescription_code;
+            this.itemDelete = this.listRecord[0].prescription_code;
           } else {
-            console.log(this.listPrescription[0]);
-            // this.getByVoucher(this.listPrescription[0].voucher_id)
+            console.log(this.listRecord[0]);
+            // this.getByVoucher(this.listRecord[0].voucher_id)
             this.msgDelete =
               "Tài sản có mã  <b>&lt&lt " +
-              this.listPrescription[0].prescription_code +
+              this.listRecord[0].prescription_code +
               " &gt&gt</b> đã phát sinh chứng từ ghi tăng";
             this.closeStatus = CloseST.DeleteCloseNotChoose;
             this.btnName = btnPopup.ClosePop;
           }
         } else {
-          console.log(this.listPrescription);
+          console.log(this.listRecord);
           this.showPopup(true);
           let isDelete = true;
-          for (const item of this.listPrescription) {
+          for (const item of this.listRecord) {
             if (item.active == 1) {
               isDelete = false;
             }
           }
           if (isDelete == false) {
-            if (this.listPrescription.length < 10) {
+            if (this.listRecord.length < 10) {
               this.msgDelete =
                 "<b> 0" +
-                this.listPrescription.length +
+                this.listRecord.length +
                 " </b> tài sản được chọn không thể xóa. Vui lòng kiểm tra lại trước khi thực hiện xóa";
             } else {
               this.msgDelete =
                 "<b> " +
-                this.listPrescription.length +
+                this.listRecord.length +
                 " </b>  tài sản được chọn không thể xóa. Vui lòng kiểm tra lại trước khi thực hiện xóa";
             }
             this.closeStatus = CloseST.DeleteCloseNotChoose;
             this.btnName = btnPopup.ClosePop;
           } else {
-            this.itemDelete = this.listPrescription.length + " tài sản";
+            this.itemDelete = this.listRecord.length + " tài sản";
             this.msgDelete = NoticeMsg.ConfirmDelet;
             this.closeStatus = CloseST.DeleteMulti;
             this.btnNameLeft = btnPopup.No;
@@ -1114,10 +954,10 @@ export default {
     deleted(value) {
       console.log(value);
       this.isShowPopup = value;
-      console.log(this.listPrescription.length);
+      console.log(this.listRecord.length);
       this.deleteMultiple();
-      // if (this.listPrescription.length == 1) {
-      //   var id = this.listPrescription[0].prescription_id;
+      // if (this.listRecord.length == 1) {
+      //   var id = this.listRecord[0].prescription_id;
       //   console.log(id);
       //   this.deleteOne(id);
       // } else {

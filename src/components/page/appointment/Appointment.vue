@@ -84,7 +84,7 @@
 <script>
 import Form from './AppointmentAdd.vue'
 import Popup from "../../base/BasePopup.vue";
-
+import axios from 'axios'
 export default {
   name: "Appointment-page",
   props: {
@@ -163,6 +163,9 @@ export default {
       ],
     };
   },
+  created() {
+    this.getAppointment()
+  },
  
   methods: {
     deleteAppointment(){
@@ -220,7 +223,20 @@ export default {
           break;
       }
       return text;
-    }
+    },
+    getAppointment() {
+      var me = this;
+      axios
+        .get("https://localhost:44371/api/Appoinments")
+        .then(function (res) {
+          if (res.data.length > 0) {
+            me.listAppointment=res.data
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
   }
 };
 </script>

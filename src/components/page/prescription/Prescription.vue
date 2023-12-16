@@ -102,7 +102,7 @@
                   "
                   class="text-center"
                 >
-                  {{ asset.PrescriptionDate }}
+                  {{ formatDate(asset.PrescriptionDate) }}
                 </td>
                 <td
                   style="
@@ -150,7 +150,7 @@
                   "
                   class="text-center"
                 >
-                  {{ asset.FromDate }}
+                  {{ formatDate(asset.FromDate) }}
                 </td>
                 <td
                   style="
@@ -160,7 +160,7 @@
                   "
                   class="text-center"
                 >
-                  {{ asset.ToDate }}
+                  {{formatDate(asset.ToDate)  }}
                 </td>
 
                 <td
@@ -366,7 +366,7 @@ import Paginate from "vuejs-paginate-next";
 import MSFunction from "../../../js/common/function";
 import { Table } from "../../../js/common/table";
 import Form from "./PrescriptionForm.vue";
-
+import axios from 'axios'
 import { FormDetailMode, CloseST } from "../../../js/common/enumeration";
 import {
   ErrorMsg,
@@ -471,6 +471,9 @@ export default {
     this.getPagingAsset();
   },
   methods: {
+       formatDate(date) {
+      return MSFunction.formatDate(date);
+    },
     show() {
       this.isShowForm = !this.isShowForm;
     },
@@ -761,117 +764,27 @@ export default {
       this.pageNumber = 1;
       this.getPagingAsset();
     },
-    /**
-     * lấy số bản ghi trên 1 trang số trang và tìm kiếm trên api
-     * AUTHOR: HTTHOA(11/03/2023)
-     */
+  
     getPagingAsset() {
+      debugger
       var me = this;
-
-      me.isShowLoad = false;
-      me.totalPage = 3;
-      me.totalRecord = 60;
-      me.totalImprover = 45545454;
-      me.totalCost = 54454554;
-      me.totalQuantity = 44;
-      me.prescriptions = [
-        {
-          PrescriptionName: "Thuốc trị cảm cúm",
-          PrescriptionDate: "10/10/2023",
-          PatientName: 0,
-          PrescriptionStatus: 3,
-          CreatedByDoctor: "Kiều Văn Khương",
-          Diagnose: "K58- Đau đầu",
-          CreatedByAddress: "Bệnh viện quân y 103",
-          FromDate: "11/10/2023",
-          ToDate: "11/11/2023",
-          Notes: "Thuốc không dành cho phụ nữ mang thai",
-        },
-        {
-          PrescriptionName: "Thuốc trị cảm cúm",
-          PrescriptionDate: "10/10/2023",
-          PatientName: 0,
-          PrescriptionStatus: 1,
-          CreatedByDoctor: "Kiều Văn Khương",
-          Diagnose: "K58- Đau đầu",
-          CreatedByAddress: "Bệnh viện quân y 103",
-          FromDate: "11/10/2023",
-          ToDate: "11/11/2023",
-          Notes: "Thuốc không dành cho phụ nữ mang thai",
-        },
-        {
-          PrescriptionName: "Thuốc trị cảm cúm",
-          PrescriptionDate: "10/10/2023",
-          PatientName: 0,
-          PrescriptionStatus: 2,
-          CreatedByDoctor: "Kiều Văn Khương",
-          Diagnose: "K58- Đau đầu",
-          CreatedByAddress: "Bệnh viện quân y 103",
-          FromDate: "11/10/2023",
-          ToDate: "11/11/2023",
-          Notes: "Thuốc không dành cho phụ nữ mang thai",
-        },
-        {
-          PrescriptionName: "Thuốc trị cảm cúm",
-          PrescriptionDate: "10/10/2023",
-          PatientName: 0,
-          PrescriptionStatus: 4,
-          CreatedByDoctor: "Kiều Văn Khương",
-          Diagnose: "K58- Đau đầu",
-          CreatedByAddress: "Bệnh viện quân y 103",
-          FromDate: "11/10/2023",
-          ToDate: "11/11/2023",
-          Notes: "Thuốc không dành cho phụ nữ mang thai",
-        },
-        {
-          PrescriptionName: "Thuốc trị cảm cúm",
-          PrescriptionDate: "10/10/2023",
-          PatientName: 0,
-          PrescriptionStatus: 3,
-          CreatedByDoctor: "Kiều Văn Khương",
-          Diagnose: "K58- Đau đầu",
-          CreatedByAddress: "Bệnh viện quân y 103",
-          FromDate: "11/10/2023",
-          ToDate: "11/11/2023",
-          Notes: "Thuốc không dành cho phụ nữ mang thai",
-        },
-        {
-          PrescriptionName: "Thuốc trị cảm cúm",
-          PrescriptionDate: "10/10/2023",
-          PatientName: 0,
-          PrescriptionStatus: 2,
-          CreatedByDoctor: "Kiều Văn Khương",
-          Diagnose: "K58- Đau đầu",
-          CreatedByAddress: "Bệnh viện quân y 103",
-          FromDate: "11/10/2023",
-          ToDate: "11/11/2023",
-          Notes: "Thuốc không dành cho phụ nữ mang thai",
-        },
-        {
-          PrescriptionName: "Thuốc trị cảm cúm",
-          PrescriptionDate: "10/10/2023",
-          PatientName: 0,
-          PrescriptionStatus: 4,
-          CreatedByDoctor: "Kiều Văn Khương",
-          Diagnose: "K58- Đau đầu",
-          CreatedByAddress: "Bệnh viện quân y 103",
-          FromDate: "11/10/2023",
-          ToDate: "11/11/2023",
-          Notes: "Thuốc không dành cho phụ nữ mang thai",
-        },
-        {
-          PrescriptionName: "Thuốc trị cảm cúm",
-          PrescriptionDate: "10/10/2023",
-          PatientName: 0,
-          PrescriptionStatus: 1,
-          CreatedByDoctor: "Kiều Văn Khương",
-          Diagnose: "K58- Đau đầu",
-          CreatedByAddress: "Bệnh viện quân y 103",
-          FromDate: "11/10/2023",
-          ToDate: "11/11/2023",
-          Notes: "Thuốc không dành cho phụ nữ mang thai",
-        },
-      ];
+      me.isShowLoad = true;
+      var url="https://localhost:44371/api/Prescriptions/Filter"
+      axios({
+        url: `${url}?keyword=${this.txtSearch}&pageSize=${this.pageDefault}&pageNumber=${this.pageNumber}`,
+        method: "post",
+        data: [],
+      })
+        
+        .then(function (res) {
+          me.totalPage = res.data.TotalPages;
+          me.totalRecord = res.data.TotalRecords;
+          me.prescriptions = res.data.Data;
+         
+        })
+        .catch(function () {
+          console.log(1);
+        });
     },
     loadData() {
       this.pageNumber = 1;
