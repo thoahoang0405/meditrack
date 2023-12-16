@@ -368,22 +368,22 @@ input[disabled]:hover{
   border: none;
 }
 .mr-2{
-  margin-right:10px ;
+  margin-right:16px ;
 }
 .mr-1{
-  margin-right:6px ;
+  margin-right:8px ;
 }
 .ml-2{
-  margin-left:10px ;
+  margin-left:16px ;
 }
 .mt-2{
-  margin-top:10px ;
+  margin-top:16px ;
 }
 .mt-1{
-  margin-top:6px ;
+  margin-top:8px ;
 }
 .mb-2{
-  margin-bottom:10px ;
+  margin-bottom:16px ;
 }
 .mt-3{
   margin-top:20px ;
@@ -480,4 +480,13 @@ input[disabled]:hover{
   }
   .w-30{
     width: 33.33%;
+  }
+  .error{
+    color: red;
+    position: absolute;
+    bottom: -25px;
+    font-size: 11px;
+  }
+  .border-error{
+    border:1px solid red;
   }

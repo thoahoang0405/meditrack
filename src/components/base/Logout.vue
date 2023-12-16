@@ -2,7 +2,7 @@
     <div class="logout-nav">
         <div class="logout-item mt-2">
             <div class="item-n" >
-                <button class="name ">Hoàng Thị Thoả</button>
+                <button class="name " @click="showUserDetail">Hoàng Thị Thoả</button>
                 <button class="btn-logout item" @click="logout"><div class="icon icon-logout mr-2"></div>  <p class="">Đăng xuất</p></button>
             </div>
         </div>
@@ -17,6 +17,9 @@ export default {
     methods:{
         logout(){
             this.$router.push("/login");
+        },
+        showUserDetail(){
+            this.$router.push("/home/account")
         }
     }
 }

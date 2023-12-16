@@ -27,39 +27,47 @@
 
     <div class="main">
       <div style="height:calc(100% - 80px) ; ">
-      <div class="list-app mt-2">
+        <div class="group-patient mt-2 " v-for="patient,index in patients" :key="index">
+          <div class="title-gr" v-if="model.user!=1">
 
-          <div class="item-app mr-2 mr-1 mt-2" v-for="(item,index) in listAppointment" :key="index">
-            <div class="title-item">Cuộc hẹn: {{ item.AppointmentName }}</div>
-            <div class="main-item">
-              <div class="content mt-2">
-                <div class="title">Ngày dự kiến:</div>
-                <span>{{ item.AppointmentDate }}</span>
-              </div>
-              <div class="content mt-1">
-                <div class="title">Địa điểm:</div>
-                <span>{{ item.Address }}</span>
-              </div>
-              <div class="content mt-1">
-                <div class="title">Tên bác sĩ:</div>
-                <span>{{ item.DoctorName }}</span>
-              </div>
-              <div class="content mt-1">
-                <div class="title">Số điện thoại:</div>
-                <span>{{ item.DoctorPhoneNumber }}</span>
-              </div>
-              <div class="content mt-1" v-if="model.user!=1">
-                <div class="title">Cuộc hẹn của:</div>
-                <span>{{ item.PatientName }}</span>
-              </div>
-
-              <div class="status" :class="genderClass(item.AppointmentStatus)" >{{ formatEnum(item.AppointmentStatus) }}</div>
-            </div>
-            <div class="footer-item">
-              <button class="btn delete-btn" @click="deleteAppointment">Huỷ bỏ</button>
-              <button class="btn update-btn" @clcik="showFormEdit(item)" >Cập nhật</button>
-            </div>
+            <div class="icon icon-down-blue mr-2 mt-1"></div> 
+            <div class="name-patient">{{patient.PatientName}}</div>
           </div>
+          <div class="list-app">              
+            <div class="item-app mr-2 mr-1 mt-2" v-for="(item,index) in patient.listAppointments" :key="index">
+              <div class="title-item">Cuộc hẹn: {{ item.AppointmentName }}</div>
+              <div class="main-item">
+                <div class="content mt-2">
+                  <div class="title">Ngày dự kiến:</div>
+                  <span>{{ item.AppointmentDate }}</span>
+                </div>
+                <div class="content mt-1">
+                  <div class="title">Địa điểm:</div>
+                  <span>{{ item.Address }}</span>
+                </div>
+                <div class="content mt-1">
+                  <div class="title">Tên bác sĩ:</div>
+                  <span>{{ item.DoctorName }}</span>
+                </div>
+                <div class="content mt-1">
+                  <div class="title">Số điện thoại:</div>
+                  <span>{{ item.DoctorPhoneNumber }}</span>
+                </div>
+                <div class="content mt-1" v-if="model.user!=1">
+                  <div class="title">Cuộc hẹn của:</div>
+                  <span>{{ item.PatientName }}</span>
+                </div>
+    
+                <div class="status" :class="genderClass(item.AppointmentStatus)" >{{ formatEnum(item.AppointmentStatus) }}</div>
+              </div>
+              <div class="footer-item">
+                <button class="btn delete-btn" @click="deleteAppointment">Huỷ bỏ</button>
+                <button class="btn update-btn" @clcik="showFormEdit(item)" >Cập nhật</button>
+              </div>
+            </div>
+
+          </div>
+
         </div>
         </div>
       <div class="notice mt-2 mr-2">
@@ -103,13 +111,18 @@ export default {
       model: {
         user: 1,
       },
-      listAppointment: [
+      patients: [
         {
+          PatientId: "7343483484",
+          PatientName: "Nguyễn Văn A",
+          listAppointments:[
+          {
           AppointmentID:"111111",
           AppointmentName: "Khám sức khoẻ định kỳ",
           AppointmentDate:"12/12/2023",
           AppointmentStatus:1,
           PatientName:'Nguyễn Văn A',
+          PatientId: "7343483484",
           DoctorPhoneNumber:"939377373",
           DoctorName:"Kiều Văn Khương",
           Address :"Hà nội",
@@ -120,6 +133,7 @@ export default {
           AppointmentName: "Khám sức khoẻ định kỳ",
           AppointmentDate:"12/12/2023",
           AppointmentStatus:2,
+          PatientId: "7343483484",
           PatientName:'Nguyễn Văn A',
           DoctorPhoneNumber:"939377373",
           DoctorName:"Kiều Văn Khương",
@@ -131,6 +145,77 @@ export default {
           AppointmentName: "Khám sức khoẻ định kỳ",
           AppointmentDate:"12/12/2023",
           AppointmentStatus:3,
+          PatientId: "7343483484",
+          PatientName:'Nguyễn Văn A',
+          DoctorPhoneNumber:"939377373",
+          DoctorName:"Kiều Văn Khương",
+          Address :"Hà nội",
+          Description:"Từ 9h đến 10h"
+        },
+          ]
+        },
+        {
+          PatientId: "7343483444",
+          PatientName: "Nguyễn Văn B",
+          listAppointments:[
+          {
+          AppointmentID:"111133",
+          AppointmentName: "Khám sức khoẻ định kỳ",
+          AppointmentDate:"12/12/2023",
+          AppointmentStatus:4,
+          PatientId: "7343483444",
+          PatientName:'Nguyễn Văn B',
+          DoctorPhoneNumber:"939377373",
+          DoctorName:"Kiều Văn Khương",
+          Address :"Hà nội",
+          Description:"Từ 9h đến 10h"
+        },
+        {
+          AppointmentID:"1114411",
+          AppointmentName: "Khám sức khoẻ định kỳ",
+          AppointmentDate:"12/12/2023",
+          AppointmentStatus:1,
+          PatientId: "7343483444",
+          PatientName:'Nguyễn Văn B',
+          DoctorPhoneNumber:"939377373",
+          DoctorName:"Kiều Văn Khương",
+          Address :"Hà nội",
+          Description:"Từ 9h đến 10h"
+        },
+          ]
+        },
+      ],
+      listAppointment: [
+        {
+          AppointmentID:"111111",
+          AppointmentName: "Khám sức khoẻ định kỳ",
+          AppointmentDate:"12/12/2023",
+          AppointmentStatus:1,
+          PatientName:'Nguyễn Văn A',
+          PatientId: "7343483484",
+          DoctorPhoneNumber:"939377373",
+          DoctorName:"Kiều Văn Khương",
+          Address :"Hà nội",
+          Description:"Từ 9h đến 10h"
+        },
+        {
+          AppointmentID:"111786671",
+          AppointmentName: "Khám sức khoẻ định kỳ",
+          AppointmentDate:"12/12/2023",
+          AppointmentStatus:2,
+          PatientId: "7343483484",
+          PatientName:'Nguyễn Văn A',
+          DoctorPhoneNumber:"939377373",
+          DoctorName:"Kiều Văn Khương",
+          Address :"Hà nội",
+          Description:"Từ 9h đến 10h"
+        },
+        {
+          AppointmentID:"133111",
+          AppointmentName: "Khám sức khoẻ định kỳ",
+          AppointmentDate:"12/12/2023",
+          AppointmentStatus:3,
+          PatientId: "7343483484",
           PatientName:'Nguyễn Văn A',
           DoctorPhoneNumber:"939377373",
           DoctorName:"Kiều Văn Khương",
@@ -142,7 +227,8 @@ export default {
           AppointmentName: "Khám sức khoẻ định kỳ",
           AppointmentDate:"12/12/2023",
           AppointmentStatus:4,
-          PatientName:'Nguyễn Văn A',
+          PatientId: "7343483444",
+          PatientName:'Nguyễn Văn B',
           DoctorPhoneNumber:"939377373",
           DoctorName:"Kiều Văn Khương",
           Address :"Hà nội",
@@ -153,7 +239,8 @@ export default {
           AppointmentName: "Khám sức khoẻ định kỳ",
           AppointmentDate:"12/12/2023",
           AppointmentStatus:1,
-          PatientName:'Nguyễn Văn A',
+          PatientId: "7343483444",
+          PatientName:'Nguyễn Văn B',
           DoctorPhoneNumber:"939377373",
           DoctorName:"Kiều Văn Khương",
           Address :"Hà nội",
@@ -161,6 +248,13 @@ export default {
         },
        
       ],
+      error: {
+        AppointmentName:''
+      },
+      rules: {
+        AppointmentName:''
+      },
+      
     };
   },
   created() {
@@ -236,9 +330,86 @@ export default {
         .catch(function (error) {
           console.log(error);
         });
+      },
+       /**
+     * hàm check validate tổng
+     * AUTHOR: HTTHOA(9/03/2023)
+     */
+     validateAll() {
+      let isValidAll = true; // biến check lỗi tổng
+      for (const propName in this.rules) {
+        let isValid = true; // biến check lỗi khi duyệt qua 1 trường dữ liệu
+
+        for (const key in this.rules[propName]) {
+          if (isValid) {
+            let functionName = `validate${key}`;
+
+            // kiểm tra nếu còn đúng thì validate tiếp
+            if (isValid == true) {
+              isValid = this[functionName](this.rules[propName][key], propName);
+            }
+          }
+        }
+        if (isValidAll) {
+          isValidAll = isValid;
+        }
+      }
+      if (!isValidAll) {
+        this.focusToInputError();
+      }
+
+      return isValidAll;
     },
-  }
-};
+    focusToInputError() {
+      try {
+        for (const key in this.error) {
+          // kiểm tra xem trường nào có lỗi thì focus vào trường đó và break ngay
+          if (this.error[key] !== "") {
+            this.$refs[key].focus();
+          }
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    /**
+     *
+     * validate duyệt từng hàm validate chi tiết
+     * AUTHOR: HTTHOA(9/03/2023)
+     */
+    validate(propName) {
+      // sau 0.2s thì validate để cập nhật dữ liệu trước khi validate
+      setTimeout(() => {
+        let isValid = true; //  biến lưu giá trị validate sau mỗi vòng for
+        for (const key in this.rules[propName]) {
+          let functionName = `validate${key}`;
+          if (isValid == true) {
+            isValid = this[functionName](this.rules[propName][key], propName);
+          }
+        }
+      }, 200);
+    },
+
+    /**
+     *
+     * validate bắt buộc nhập
+     * AUTHOR: HTTHOA(9/03/2023)
+     */
+     validateRequired(value, propName) {
+      // kiểm tra rỗng thì lưu lại lỗi và trả về false
+      if (!this.appointments[propName]) {
+        this.error[propName] = 'không được để trống';
+
+        return false;
+      } else {
+        this.error[propName] = "";
+        return true;
+      }
+    },
+  
+}
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

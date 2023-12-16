@@ -147,13 +147,13 @@
   .form-add .form-test {
     margin: 0px;
     width: 750px;
-    height: 512px;
+    height: 540px;
     background-color: #fff;
     padding: 20px;
   }
   
   .form-test .gr-item {
-    width: 50%;
+    position: relative;
   }
  .form-test  .label {
     font-weight: bold;
