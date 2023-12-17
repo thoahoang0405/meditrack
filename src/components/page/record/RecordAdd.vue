@@ -3,7 +3,7 @@
     <div class="form-record" v-if="isShowStep1">
       <div class="form-header">
         <div>
-          {{ formTitle }}
+         Thêm hồ sơ
         </div>
         <div class="icon icon-close" @click="closeFormST1"></div>
       </div>
@@ -39,9 +39,9 @@
           <div class="gr-item w-50 ml-2 w-30">
             <div class="label">Họ tên</div>
             <input
+            class="mt-1"
               :class="error.FullName != '' ? 'border-error' : ''"
               @blur="validate('FullName')"
-              @focus="$refs.FullName.select()"
               v-model="records.FullName"
             />
             <p class="error" v-if="error.FullName != ''">
@@ -49,8 +49,8 @@
             </p>
           </div>
         </div>
-
-          <div class="gr-item w-50 mr-2">
+        <div class="group-controll mt-2">
+          <div class="gr-item w-30 mr-2">
             <div class="label">Ngày sinh</div>
             <input
               class="mt-1 w-100"
@@ -65,27 +65,29 @@
               {{ error.DateOfBirth }}
             </p>
           </div>
-          <div class="gr-item w-50 mr-2 ml-2">
-            <div class="label">Số điện thoại</div>
+          <div class="gr-item w-30 mr-2 ml-2 ">
+            <div class="label ">Số điện thoại</div>
             <input
+            class="mt-1"
               :class="error.PhoneNumber != '' ? 'border-error' : ''"
               @blur="validate('PhoneNumber')"
-              @focus="$refs.PhoneNumber.select()"
               v-model="records.PhoneNumber"
             />
             <p class="error" v-if="error.PhoneNumber != ''">
               {{ error.PhoneNumber }}
             </p>
           </div>
-          <div class="w-25 ml-2">
+          <div class="w-30 ml-2">
             <div class="label">Giới tính</div>
+            <div class="gr-radio" style="display: flex;">
+
               <input class="mr-1 mt-2" type="radio" value="0" v-model="records.Gender " />
               <p class="mr-2" for="1">Nam</p>
               <input class="mr-1 mt-2" type="radio" value="1" v-model="records.Gender " />
               <p for="2">Nữ</p>
             </div>
-          
-        
+            </div>
+          </div>        
         <div class="group-controll mt-2">
           <div class="w-100">
             <div class="label">Địa chỉ</div>
@@ -162,7 +164,7 @@
     <div class="form-treat" v-if="isShowStep3">
         <div class="form-header">
           <div>
-            {{ formTitle }}
+            Thêm hồ sơ
           </div>
           <div class="icon icon-close" @click="closeFormST3"></div>
         </div>
@@ -191,11 +193,11 @@
             
           </div>
           <div class="group-controll mt-2">
-            <div class="gr-item mr-2">
+            <div class="gr-item mr-2 w-50">
               <div class="label">Ngày điều trị</div>
               <input class="mt-1 w-100" type="date" v-model="records.Treatments.TreatmentDate" />
             </div>
-            <div class="gr-item ml-2 mr-2">
+            <div class="gr-item ml-2 mr-2 w-50">
               <div class="label">Tên đơn thuốc</div>
               <input class="mt-1 w-100" type="text" v-model="records.Treatments.PrescriptionName" />
             </div>
@@ -222,7 +224,7 @@
       <div class="form-test" v-if="isShowStep2">
         <div class="form-header">
           <div>
-            {{ formTitle }}
+            Thêm hồ sơ
           </div>
           <div class="icon icon-close" @click="closeFormsST2"></div>
         </div>
@@ -256,7 +258,7 @@
                     </div>
     
                 </div>
-                <div class="main-table mt-2 mb-2" v-for="item,index in recods.MedicalTests" :key="index">
+                <div class="main-table mt-2 mb-2" v-for="item,index in records.MedicalTests" :key="index">
                     <input class="item-table" type="text"  v-model="item.TestName" style="min-width: 150px;"/>
                     <input class="item-table" type="text" v-model="item.Unit" style="min-width: 80px;">
                     <input class="item-table" type="text" v-model="item.Normal" style="min-width: 100px;">
@@ -301,7 +303,17 @@ export default {
       isShowStep3:false,
       isShowStepTwo:false,
       appointment: {},
-      recods:{
+      records:{
+        RecordTitle:'',
+        RecordDate:'',
+        MedicalExaminationAddress:'',
+        DoctorName:'',
+        FullName:'',
+        DateOfBirth:'',
+        Gender:'',
+        Address:'',
+        PhoneNumber:'',
+        DoctorPhoneNumber:'',
         MedicalTests:[
             {
                 TestID:"",

@@ -22,7 +22,13 @@
           <span class="icon icon-search-black"></span>
         </div>
       </div>
-      <button class="btn button-blue" @click="showAdd()">+ Thêm hồ sơ</button>
+      <div class="btn-right" style="display: flex;">
+        <div class="btn-upload mr-2" style="display: flex; cursor: pointer;">
+          <div class="icon icon-upload mr-1"></div>
+          <div class="mr-2 mt-1" style="color: #22c3e6; font-weight: bold;"> Thêm file hồ sơ</div>
+        </div>
+        <button class="btn button-blue" @click="showAdd()">+ Thêm hồ sơ</button>
+      </div>
     </div>
 
     <div class="main">
