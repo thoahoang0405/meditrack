@@ -33,28 +33,43 @@
             </div>
           </div>
           <div class="footer-item">
-            <button class="btn delete-btn">Xoá</button>
-            <button class="btn update-btn">Cập nhật</button>
+            <button class="btn delete-btn" @click="deleted(item.PatientID)">Xoá</button>
+            <button class="btn update-btn" @click="edit(item)">Cập nhật</button>
           </div>
         </div>
       </div>
     </div>
-    <Form v-if="isShowForm == true" @closeForm="isShowForm=false"></Form>
-  </div>
+    <Form v-if="isShowForm == true" :data="dataEdit" @closeForm="isShowForm=false" :formTitle="formTitle" :formMode="formMode"></Form>
+    <Popup
+      v-if="isShowPopup"
+      :msg="msgError"
+      :name="btnName"
+      :close="1"
+      @hidePopup="isShowPopup = false"
+      @isDelete="deleteFamily()"
+    ></Popup>
+ </div>
 </template>
-
 <script>
 import Form from "./FamilyMemberForm.vue";
+import Popup from "../../base/BasePopup.vue";
 import axios from "axios";
 export default {
   name: "Family-page",
   components: {
     Form,
+    Popup
   },
 
   data() {
     return {
+      isShowPopup:false,
+      msgError:"Bạn có chắc chắn xoá thành viên này không?",
+      formMode:1,
+      formTitle:'Thêm thành viên',
+      btnName:'',
       isShowForm: false,
+      dataEdit:{},
       listFamily: [
         {
           FullName: "Hoàng Văn A",
@@ -67,14 +82,47 @@ export default {
           PhoneNumber: "08743834834",
         },
       ],
+      familyID:''
     };
   },
   created() {
     this.getFamily()
   },
+  mounted() {
+    this.emitter.on("loadDataFamily", () => {
+      this.getFamily();
+    });
+    
+  },
   methods: {
-    showForm() {
+    deleted(val) {
+      this.isShowPopup = !this.isShowPopup;
+      this.familyID=val
+    },
+    deleteFamily(){
+      
+      this.isShowPopup = !this.isShowPopup;
+     var url="https://localhost:44371/api/FamilyMembers" 
+     axios
+        .delete(`${url}/${this.familyID}`)
+        .then((response) => {
+          this.getFamily();
+          this.$toast.open({
+          message: 'Xoá thành viên thành công.',
+          type: 'success',
+          position:'top'
+      });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+ 
+    },
+    edit(item){
+      this.dataEdit=item
       this.isShowForm = !this.isShowForm;
+      this.formTitle="Sửa thông tin thành viên"
+      this.formMode=2
     },
     getFamily() {
       var url = "https://localhost:44371/api/FamilyMembers";
@@ -87,8 +135,14 @@ export default {
           console.log(err);
         });
     },
+    showForm() {
+      this.isShowForm = !this.isShowForm;
+      this.formTitle="Thêm thành viên"
+      this.formMode=1
+    },
+    
   },
-};
+}
 </script>
 <style scoped>
 .family .main-item {
@@ -112,3 +166,4 @@ export default {
 }
 @import url(./FamilyMember.scss);
 </style>
+

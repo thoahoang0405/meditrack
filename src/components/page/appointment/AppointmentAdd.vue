@@ -8,7 +8,7 @@
         <div class="icon icon-close" @click="closeForm"></div>
       </div>
       <div class="form-main">
-        <div class="group-controll">
+        <div class="group-controll w-100">
           <div class="gr-item w-50 mr-2">
             <div class="label">Tên cuộc hẹn</div>
             <input
@@ -23,7 +23,7 @@
               {{ error.AppointmentName }}
             </p>
           </div>
-          <div class="gr-item w-50 ml-2">
+          <div class="gr-item w-50 ml-2 mr-2">
             <div class="label">Ngày dự kiến</div>
             <input
               class="mt-1 w-100"
@@ -39,32 +39,42 @@
             </p>
           </div>
         </div>
-        <div class="group-controll mt-2">
-          <div class="gr-item " :class="editMode==2?'w-50 mr-2':'w-100'">
-                <div class="label">Cuộc hẹn cho</div>
-                <div  class="mt-1 w-100">
-                    <Combobox
-                      class="item-input check-input"
-                      :items="patients"                 
-                      :fieldCode="'PatientName'"
-                      :fieldName="'PatientName'"
-                      :value="appointments.PatientName"
-                      @selectedItem="selectItemCbb"
-                       />
-                </div>
+        <div class="group-controll w-100 mt-2">
+          <div class="gr-item" :class="editMode == 2 ? 'w-50 mr-2' : 'w-100'">
+            <div class="label">Cuộc hẹn cho</div>
+            <div class="mt-1 w-100">
+              <Combobox
+                class="item-input check-input"
+                :items="patients"
+                :fieldCode="'PatientName'"
+                :fieldName="'PatientName'"
+                :value="appointments.PatientName"
+                @selectedItem="selectItemCbb"
+              />
             </div>
-          
-          <div class="gr-item w-50 ml-2" v-if="editMode==2">
+          </div>
+
+          <div class="gr-item w-50 ml-2" v-if="editMode == 2">
             <div class="label">Trạng thái cuộc hẹn</div>
-            <div class=" mb-1" style="display: flex;">
-          <input class="mr-1 mt-1" type="radio" value="3" v-model="appointments.AppointmentStatus" />
-          <p class="mr-2" for="1">Đã hoàn thành</p>
-          <input class="mr-1 mt-1" type="radio" value="4"  v-model="appointments.AppointmentStatus" />
-          <p for="2" >Bỏ lỡ</p>
-        </div>
+            <div class="mb-1" style="display: flex">
+              <input
+                class="mr-1 mt-1"
+                type="radio"
+                value="3"
+                v-model="appointments.AppointmentStatus"
+              />
+              <p class="mr-2" for="1">Đã hoàn thành</p>
+              <input
+                class="mr-1 mt-1"
+                type="radio"
+                value="4"
+                v-model="appointments.AppointmentStatus"
+              />
+              <p for="2">Bỏ lỡ</p>
+            </div>
           </div>
         </div>
-        <div class="group-controll mt-2">
+        <div class="group-controll w-100 mt-2">
           <div class="gr-item w-50 mr-2">
             <div class="label">Tên bác sĩ</div>
             <input
@@ -80,7 +90,7 @@
               {{ error.DoctorName }}
             </p>
           </div>
-          <div class="gr-item w-50 ml-2">
+          <div class="gr-item w-50 ml-2 mr-2">
             <div class="label">Số điện thoại</div>
             <input
               class="mt-1 w-100"
@@ -96,8 +106,8 @@
             </p>
           </div>
         </div>
-        <div class="group-controll mt-2">
-          <div class="w-100 gr-item">
+        <div class="group-controll w-100 mt-2 mr-2">
+          <div class="w-100 gr-item mr-2">
             <div class="label">Địa điểm</div>
             <input
               class="mt-1 w-100"
@@ -113,50 +123,54 @@
             </p>
           </div>
         </div>
-        <div class="group-controll mt-2">
-          <div class="w-100">
+        <div class="group-controll w-100 mt-2 mr-2">
+          <div class="w-100 gr-item mr-2">
             <div class="label">Ghi chú</div>
-            <input class="mt-1 w-100" type="text" v-model="appointments.Description" />
+            <input
+              class="mt-1 w-100"
+              type="text"
+              v-model="appointments.Description"
+            />
           </div>
         </div>
-   
-      <div class="form-footer mt-2">
-        <button class="btn button-blue" @click="save()"> Lưu</button>
-        <button class="btn button-blue-outline mr-2"> Huỷ</button>
 
+        <div class="form-footer mt-2">
+          <button class="btn button-blue" @click="save()">Lưu</button>
+          <button class="btn button-blue-outline mr-2" @click="closeForm()">
+            Huỷ
+          </button>
+        </div>
       </div>
-  </div>
-  </div>
+    </div>
   </div>
 </template>
 <script>
 import Combobox from "../../base/BaseCombobox.vue";
 import axios from "axios";
 export default {
-  props: ["data","formMode"],
+  props: ["data", "formMode"],
   components: {
     Combobox,
   },
   data() {
     return {
-      editMode:1,
-        appointments:{
-          AppointmentID:'00000000-0000-0000-0000-000000000000',
-          UseID:'443f7b5d-99c2-11ee-bfeb-1866da3df2b8',
-          AppointmentName:'',
-          AppointmentDate:null,
-          PatientName:'',
-          AppointmentStatus:1,
-          DoctorName:'',
-          DoctorPhoneNumber:'',
-          Address:'',
-          Description:'',
-          PatientName:'',
-          PatientID:null,
-
-        },
-        PatientName:'',
-        PatientID:'',
+      editMode: 1,
+      appointments: {
+        AppointmentID: "00000000-0000-0000-0000-000000000000",
+        UseID: "443f7b5d-99c2-11ee-bfeb-1866da3df2b8",
+        AppointmentName: "",
+        AppointmentDate: null,
+        PatientName: "",
+        AppointmentStatus: 1,
+        DoctorName: "",
+        DoctorPhoneNumber: "",
+        Address: "",
+        Description: "",
+        PatientName: "",
+        PatientID: null,
+      },
+      PatientName: "",
+      PatientID: "",
       patients: [
         {
           PatientId: "7343483484",
@@ -185,21 +199,37 @@ export default {
     };
   },
   created() {
-    this.appointments= this.data
-    this.editMode= this.formMode
-    this.getComboboxPatient()
-},
-mounted() {
-  this.getComboboxPatient()
-},
-  methods:{
-    closeForm(){
-
-        this.$emit("closeForm", false);
+    this.appointments = this.data;
+    this.editMode = this.formMode;
+    if (this.editMode == 2) {
+      this.appointments = this.data;
+    } else {
+      this.appointments = {
+        AppointmentID: "00000000-0000-0000-0000-000000000000",
+        UseID: "443f7b5d-99c2-11ee-bfeb-1866da3df2b8",
+        AppointmentName: "",
+        AppointmentDate: null,
+        PatientName: "",
+        AppointmentStatus: 1,
+        DoctorName: "",
+        DoctorPhoneNumber: "",
+        Address: "",
+        Description: "",
+        PatientName: "",
+        PatientID: null,
+      };
+    }
+    this.getComboboxPatient();
+  },
+  mounted() {
+    this.getComboboxPatient();
+  },
+  methods: {
+    closeForm() {
+      this.$emit("closeForm", false);
     },
-    getComboboxPatient(){
-    debugger
-      var url="https://localhost:44371/api/FamilyMembers"
+    getComboboxPatient() {
+      var url = "https://localhost:44371/api/FamilyMembers";
       axios
         .get(`${url}`)
         .then((response) => {
@@ -210,51 +240,60 @@ mounted() {
         });
     },
     selectItemCbb(value) {
-      debugger
-      if (value) {        
-        this.appointments.PatientName=value.PatientName
-        this.appointments.PatientID=value.PatientID
+      if (value) {
+        this.appointments.PatientName = value.PatientName;
+        this.appointments.PatientID = value.PatientID;
       } else {
-        this.appointments.PatientName=''
-        this.appointments.PatientID=''
+        this.appointments.PatientName = "";
+        this.appointments.PatientID = "";
       }
-    
     },
-    save(){
-      var me= this
-  //validate
-  if(me.editMode==1){
-    var url="https://localhost:44371/api/Appoinments"
-    axios({
-      url: `${url}`,
-      method: "post",
-      data: me.appointments,
-    })
-      .then(function (res) {
-        me.$emit("closeForm", false);
-      })
-      .catch(function (res) {
-        console.log(res);
-      });
+    save() {
+      var me = this;
+      //validate
+      if (this.validateAll()) {
+        if (me.editMode == 1) {
+          var url = "https://localhost:44371/api/Appoinments";
+          axios({
+            url: `${url}`,
+            method: "post",
+            data: me.appointments,
+          })
+            .then(function (res) {
+              me.$emit("closeForm", false);
+              me.emitter.emit("loadData");
+              me.$toast.open({
+                message: "Cất dữ liệu thành công.",
+                type: "success",
+                position: "top",
+              });
+            })
+            .catch(function (res) {
+              console.log(res);
+            });
+        } else {
+          var url = "https://localhost:44371/api/Appoinments";
+          axios({
+            url: `${url}/${me.appointments.AppointmentID}`,
+            method: "put",
+            data: me.appointments,
+          })
+            .then(function (res) {
+              me.$emit("closeForm", false);
+              me.emitter.emit("loadData");
+              me.$toast.open({
+                message: "Cất dữ liệu thành công.",
+                type: "success",
+                position: "top",
+              });
+            })
+            .catch(function (res) {
+              console.log(res);
+            });
+        }
+      }
+    },
 
-  }else{
-    var url="https://localhost:44371/api/Appoinments"
-    axios({
-      url: `${url}/${me.appointments.AppointmentID}`,
-      method: "put",
-      data: me.appointments,
-    })
-      .then(function (res) {
-        me.$emit("closeForm", false);
-      })
-      .catch(function (res) {
-        console.log(res);
-      });
-  }
-      
-    },
-  
- 
     closeForm() {
       this.$emit("closeForm", false);
     },
@@ -281,9 +320,9 @@ mounted() {
           isValidAll = isValid;
         }
       }
-      if (!isValidAll) {
-        this.focusToInputError();
-      }
+      // if (!isValidAll) {
+      //   this.focusToInputError();
+      // }
 
       return isValidAll;
     },
@@ -334,9 +373,8 @@ mounted() {
         this.error[propName] = "";
         return true;
       }
-    
+    },
   },
-}
 };
 </script>
 <style scope>

@@ -6,7 +6,7 @@ import Register from "../src/components/page/Register.vue"
 import Login from "../src/components/page/Login.vue"
 import Record from "../src/components/page/record/Record.vue"
 import Account from "../src/components/page/account/AccountManagement.vue"
-import Family from "../src/components/page/familyMember/FamilyMember.vue"
+import Family from "./components/page/familyMember/FamilyMembers.vue"
 const routes =  [
       {
         path: '/',

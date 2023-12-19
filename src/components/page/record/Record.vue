@@ -4,9 +4,9 @@
       <div class="title">
         <h2 class="mr-2 mb-2">Quản lý hồ sơ sức khỏe</h2>
         <div class="radio-user mb-1">
-          <input class="mr-1" type="radio" value="1" v-model="model.user" />
+          <input class="mr-1" type="radio" value="1" v-model="user" />
           <label class="mr-2" for="1">Tôi</label>
-          <input class="mr-1" type="radio" value="2" v-model="model.user" />
+          <input class="mr-1" type="radio" value="2" v-model="user" />
           <label for="2">Gia đình</label>
         </div>
       </div>
@@ -22,10 +22,12 @@
           <span class="icon icon-search-black"></span>
         </div>
       </div>
-      <div class="btn-right" style="display: flex;">
-        <div class="btn-upload mr-2" style="display: flex; cursor: pointer;">
+      <div class="btn-right" style="display: flex">
+        <div class="btn-upload mr-2" style="display: flex; cursor: pointer">
           <div class="icon icon-upload mr-1"></div>
-          <div class="mr-2 mt-1" style="color: #22c3e6; font-weight: bold;"> Thêm file hồ sơ</div>
+          <div class="mr-2 mt-1" style="color: #22c3e6; font-weight: bold">
+            Thêm file hồ sơ
+          </div>
         </div>
         <button class="btn button-blue" @click="showAdd()">+ Thêm hồ sơ</button>
       </div>
@@ -42,21 +44,17 @@
                   <div class="tooltip-stt">{{ tableInfo.numericTooltip }}</div>
                 </th>
 
-                <th>{{ tableInfo.RecordName }}</th>
-                <th class="text-center">{{ tableInfo.FullName }}</th>
-                <th>{{ tableInfo.MedicalExaminationAddress }}</th>
-                <th>{{ tableInfo.DoctorName }}</th>
-                <th>{{ tableInfo.Diagnose }}</th>
-                <th>{{ tableInfo.PrescriptionName }}</th>
+                <th>Tiêu đề hồ sơ</th>
+                <th class="text-center">Ngày tạo</th>
+                <th>Họ và tên</th>
+                <th>Bác sĩ khám</th>
+                <th>Địa chỉ khám</th>
+                <th><div class="text-center">Ngày sinh</div></th>
 
-                <th>
-                  <div class="text-center">
-                    {{ tableInfo.TreatmentDate }}
-                  </div>
-                </th>
-                <th class="text-center">{{ tableInfo.Notes }}</th>
-                <th v-if="model.user != 1">{{ tableInfo.patientName }}</th>
-                <th>{{ tableInfo.function }}</th>
+                <th>Địa chỉ</th>
+                <th class="text-center">Số điện thoại</th>
+                <th v-if="user != 1">{{ tableInfo.patientName }}</th>
+                <th>Chức năng</th>
               </tr>
             </thead>
 
@@ -76,9 +74,6 @@
                 :key="asset.RecordID"
                 :class="listRecord.includes(asset) ? 'active' : ''"
                 @dblclick="showFormEdit(asset)"
-                @contextmenu="onClickContextMenu(asset, $event)"
-                @mousedown.prevent.ctrl="mouseDown(asset)"
-                @mouseup.prevent.ctrl="mouseUp(asset)"
                 style="max-height: 38px; box-sizing: border-box"
               >
                 <td
@@ -91,38 +86,20 @@
                 >
                   {{ index + 1 }}
                 </td>
-                <td
-                  style="
-                    min-width: 100px;
-                    box-sizing: border-box;
-                  "
-                >
-                  {{ asset.RecordName }}
+                <td style="min-width: 100px; box-sizing: border-box">
+                  {{ asset.RecordTitle }}
                 </td>
                 <td
-                  style="
-                    min-width: 130px;
-                    box-sizing: border-box;
-                  "
+                  style="min-width: 130px; box-sizing: border-box"
                   class="text-center"
                 >
-                  {{ asset.MedicalExaminationAddress }}
+                  {{ formatDate(asset.RecordDate) }}
                 </td>
-                <td
-                  style="
-                    max-width: 140px !important;
-                    box-sizing: border-box;
-                  "
-                >
-                  {{ asset.DoctorName }}
-                </td>
-                <td
-                  style="
-                    min-width: 90px;
-                    box-sizing: border-box;
-                  "
-                >
+                <td style="max-width: 140px !important; box-sizing: border-box">
                   {{ asset.FullName }}
+                </td>
+                <td style="min-width: 90px; box-sizing: border-box">
+                  {{ asset.DoctorName }}
                 </td>
 
                 <td
@@ -132,7 +109,7 @@
                     box-sizing: border-box;
                   "
                 >
-                  {{ asset.PrescriptionName }}
+                  {{ asset.MedicalExaminationAddress }}
                 </td>
                 <td
                   style="
@@ -140,41 +117,27 @@
                     max-width: auto;
                     box-sizing: border-box;
                   "
-                >
-                  {{ asset.Diagnose }}
-                </td>
-                <td
-                  style="
-                    min-width: 120px;
-                    box-sizing: border-box;
-                  "
                   class="text-center"
                 >
-                  {{  formatDate(asset.TreatmentDate) }}
+                  {{ formatDate(asset.DateOfBirth) }}
                 </td>
-                <td
-                  style="
-                    min-width: 104px;
-                    box-sizing: border-box;
-                  "
-                  class="text-center"
-                >
-                  {{ asset.Notes }}
+                <td style="min-width: 120px; box-sizing: border-box">
+                  {{ asset.Address }}
+                </td>
+                <td style="min-width: 104px; box-sizing: border-box">
+                  {{ asset.PhoneNumber }}
                 </td>
 
                 <td
-                  v-if="model.user != 1"
-                  style="
-                    min-width: 104px;
-                    box-sizing: border-box;
-                  "
+                  v-if="user != 1"
+                  style="min-width: 104px; box-sizing: border-box"
                 >
-                  {{ asset.patientName }}
+                  {{ asset.PatientName }}
                 </td>
                 <td
                   style="
                     min-width: 90px;
-                    
+
                     box-sizing: border-box;
                   "
                 >
@@ -182,7 +145,7 @@
                     <div class="func-edit mr-1" @click="showFormEdit(asset)">
                       Xem/Sửa
                     </div>
-                    <div class="icon icon-delete"></div>
+                    <div class="icon icon-delete" @click="deleteRecords(asset.RecordID)"></div>
                   </div>
                 </td>
               </tr>
@@ -204,7 +167,7 @@
                     </div>
                   </div>
                 </td>
-              
+
                 <td
                   colspan="2"
                   style="
@@ -226,20 +189,6 @@
                       >
                       </Paginate>
                     </div>
-
-                    <!-- v-model="pageNumber"
-                        :page-count="totalPage"
-                        :page-range="3"
-                        :margin-pages="1"
-                        :click-handler="clickCallback"
-                        :prev-link-class="'page-link'"
-                        :prev-text="'<'"
-                        :prev-class="'page-item'"
-                        :next-link-class="'page-link'"
-                        :next-text="'>'"
-                        :next-class="'page-item'"
-                        :container-class="'pagination'"
-                        :page-class="'page-item'" -->
                   </div>
                 </td>
 
@@ -253,17 +202,11 @@
                 ></td>
                 <td
                   colspan="1"
-                  style="
-                    min-width: 90px;
-                    box-sizing: border-box;
-                  "
+                  style="min-width: 90px; box-sizing: border-box"
                 ></td>
                 <td
                   colspan="1"
-                  style="
-                    min-width: 90px;
-                    box-sizing: border-box;
-                  "
+                  style="min-width: 90px; box-sizing: border-box"
                 ></td>
                 <td
                   colspan="1"
@@ -341,40 +284,52 @@
                 </td>
                 <td
                   colspan="1"
-                  style="
-                    min-width: 90px;
-                    box-sizing: border-box;
-                  "
+                  style="min-width: 90px; box-sizing: border-box"
                 ></td>
-
               </tr>
             </tfoot>
           </table>
         </div>
       </div>
-    
     </div>
-    <Form v-if="isShowAdd==true" @closeFormST1="isShowAdd=false"></Form>
+    <Form
+      v-if="isShowAdd == true"
+      @closeForm="isShowAdd = false"
+      :formMode="formMode"
+      :data="recordEdit"
+    ></Form>
+    <FormEdit
+    v-if="isShowEdit == true"
+      @closeForm="isShowEdit = false"
+      
+      :data="recordEdit"
+    ></FormEdit>
+    <Popup
+      v-if="isShowPopup"
+      :msg="msgError"
+      :name="btnName"
+      :close="1"
+      @hidePopup="isShowPopup = false"
+      @isDelete="deleteRecord()"
+    ></Popup>
   </div>
 </template>
 
 <script>
-import Form from "./RecordAdd.vue"
+import Form from "./RecordAdd.vue";
 import Paginate from "vuejs-paginate-next";
 import MSFunction from "../../../js/common/function";
 import { TableRecord } from "../../../js/common/table";
-import { FormDetailMode, CloseST } from "../../../js/common/enumeration";
+import FormEdit from './RecordEdit.vue'
 import axios from "axios";
-import {
-  ErrorMsg,
-  btnPopup,
-  TitlePopup,
-  NoticeMsg,
-} from "../../../js/common/resource";
+import Popup from "../../base/BasePopup.vue";
+
 export default {
   components: {
     Paginate,
-    Form
+    Form,
+    FormEdit,
+    Popup
   },
   name: "Record-page",
   props: {
@@ -382,65 +337,29 @@ export default {
   },
   data() {
     return {
-      isShowAdd:false,
+      recordIdDelete:'',
+      msgError:'Bạn có chắc chắn xoá Hồ sơ này không?',
+      isShowPopup:false,
+      btnName:'Đồng ý',
+      isShowEdit:false,
+      formMode: 1,
+      isShowAdd: false,
       message: "",
-      isShowContextMenu: false,
-      posTop: 10,
-      posLeft: 10,
-      itemDelete: "",
-      isDeleted: 0,
-      keywordDep: "",
-      keywordCate: "",
-      numeric: 0,
-      employee: [],
-      msgError: "",
-      msgDelete: "",
-      isShow: false,
-      btnName: "",
-      btnNameLeft: "",
-      isShowLoad: false,
-      closeStatus: 0,
-      isShowPopup: false,
-      isShowPage: false,
-      assetSelected: [],
-      prescription_id: "",
       tableInfo: TableRecord,
       name: "",
-      selectedItems: [], // các item được chọn
-      formMode: 0,
       totalPage: 0,
       totalRecord: 0,
       pageNumber: 1,
       isActive: "20",
       pageDefault: 20,
       records: [],
-      oldData: [],
-      newCode: "",
       listRecord: [],
-      prescription: {},
-      prescriptionCategory: [],
-      prescription_category_code: "",
-      prescription_category_id: "",
-      prescription_category_name: "",
-      departments: [],
-      department_code: "",
-      department_name: "",
-      department_id: "",
-      currentprescription: {},
       txtSearch: "",
-      placeholderName: "",
-      totalQuantity: 0,
-      totalCost: 0,
-      totalImprover: 0,
-      listOnMouseDown: {},
-      listOnMouseUp: {},
-      oldKeyDepartment: "",
-      active: null,
-      array: [],
-      voucher_code: "",
-      model: {
+      medicaltest: [],
+      treatment: [],
+      recordEdit:{},
+      isShowPage:false,
         user: 1,
-      },
     };
   },
   watch: {
@@ -451,28 +370,80 @@ export default {
     txtSearch: function () {
       if (this.txtSearch == "") {
         this.pageNumber = 1;
-        this.getPagingAsset();
+        this.getRecords();
       }
     },
-
-    records: function () {
-      if (this.prescription.department_id == "") {
-        this.getPagingAsset();
-      }
-      if (this.prescription.prescription_category_id == "") {
-        this.getPagingAsset();
+    user: function () {
+      if (this.user == 1) {
+        this.getRecords()
+      }else{
+        this.getRecords()
       }
     },
+   
+  },
+  mounted() {
+    this.emitter.on("loadDataRecord", () => {
+      this.getRecords();
+    });
   },
   created() {
-    this.getPagingAsset();
+    this.getRecords();
+    
   },
   methods: {
+   
+    deleteRecords(val) {
+      this.isShowPopup = !this.isShowPopup;
+      this.recordIdDelete=val
+    },
+    deleteRecord(){
+      this.isShowPopup = !this.isShowPopup;
+
+      var me= this
+     var url="https://localhost:44371/api/Records/records?RecordID=" 
+     axios
+    .delete(`${url}${this.recordIdDelete}`)
+        .then((response) => {
+          me.getRecords();
+          me.$toast.open({
+          message: 'Huỷ bỏ cuộc hẹn thành công.',
+          type: 'success',
+          position:'top'
+      });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    async getTreatment(id) {
+      var url = "https://localhost:44371/api/Records/treatment?id=";
+      await axios
+        .get(`${url}${id}`)
+        .then((response) => {
+          this.treatment = response.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    async getMedicaltest(id) {
+      var url = "https://localhost:44371/api/Records/medicaltest?id=";
+      await axios
+        .get(`${url}${id}`)
+        .then((response) => {
+          this.medicaltest = response.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
     formatDate(date) {
       return MSFunction.formatDate(date);
     },
-    showAdd(){
-      this.isShowAdd=!this.isShowAdd
+    showAdd() {
+      this.isShowAdd = !this.isShowAdd;
+      this.formMode = 1;
     },
     images(e) {
       e.map((res) => console.log(res));
@@ -505,38 +476,7 @@ export default {
         console.log(err);
       }
     },
-    /**
-     *
-     * chọn trong khoảng đã kéo
-     * AUTHOR: HTTHOA(2/4/2023)
-     */
-    selectMultipleItem(item1, item2) {
-      //đoạn này là lấy những tài sản khi kéo giữ chuột
-      if (
-        this.records.includes(item1) &&
-        this.records.includes(item2)
-      ) {
-        // lấy vị trí của 2 item trong mảng prescription
-        //start là vị trí đầu khi down ctrl
-        let startIndex = this.records.indexOf(item2);
-        //end là vị trí khi up ctrl
-        let endIndex = this.records.indexOf(item1);
-        // kiểm tra vị trí bắt đầu và kết thúc nếu bắt đầu lớn hơn kết thúc thì đổi lại
-        if (startIndex > endIndex) {
-          let tmp = startIndex;
-          startIndex = endIndex;
-          endIndex = tmp;
-        }
 
-        // thêm các item chưa có trong mảng xóa từ vị trí bắt đầu đến kết thúc
-        for (let i = startIndex; i <= endIndex; i++) {
-          //nếu trong danh sách chưa gồm tài sản đó thì push vào danh sách
-          if (!this.listRecord.includes(this.records[i])) {
-            this.listRecord.push(this.records[i]);
-          }
-        }
-      }
-    },
     /**
      * up ctrl thả chuột để lấy vị trí cuối cùng chọn
      * AUTHOR: HTTHOA(2/4/2023)
@@ -554,97 +494,6 @@ export default {
     },
 
     /**
-     * click lấy vị trí context menu
-     * AUTHOR: HTTHOA(2/04/2023)
-     */
-
-    onClickContextMenu(asset, e) {
-      e.preventDefault();
-      this.selectItem(asset);
-      //  lấy vị trí chuột
-      this.posTop = e.clientY;
-      this.posLeft = e.clientX;
-      this.isShowContextMenu = true;
-    },
-    /**
-     * đóng context menu
-     * AUTHOR: HTTHOA(2/4/2023)
-     */
-    closeContextMenu() {
-      setTimeout(() => {
-        this.isShowContextMenu = false;
-        this.listRecord = [];
-      }, 1000);
-    },
-    /**
-     * click vào nhân bản trong  chức năng context menu
-     * AUTHOR: HTTHOA(2/4/2023)
-     */
-    onClickReplicationContextMenu() {
-      this.isShowContextMenu = false;
-      this.showReplication(this.currentprescription);
-    },
-    /**
-     * click vào xóa trong  chức năng context menu
-     * AUTHOR: HTTHOA(2/4/2023)
-     */
-    onClickDeleteContextMenu() {
-      this.isShowContextMenu = false;
-      this.onClickDeleteMultiple();
-    },
-    /**
-     * click vào sửa trong  chức năng context menu
-     * AUTHOR: HTTHOA(2/4/2023)
-     */
-    onClickEditContextMenu() {
-      this.isShowContextMenu = false;
-      this.showFormEdit(this.currentprescription);
-    },
-    /**
-     * click vào thêm trong  chức năng context menu
-     * AUTHOR: HTTHOA(2/4/2023)
-     */
-    onClickAddContextMenu() {
-      this.isShowContextMenu = false;
-      this.btnAddOnclick();
-    },
-
-    /**focus vào ô search đầu tiên
-     * AUTHOR: HTTHOA(27/03/2023)
-     */
-    setFocus() {
-      this.$nextTick(function () {
-        this.$refs["search"].focus();
-      });
-    },
-
-    /**
-     * lấy thông tin phòng ban từ combobox
-     * AUTHOR: HTTHOA(28/02/2023)
-     */
-    selectItemCbb(value) {
-      if (value.department_id) {
-        this.department_id = value.department_id;
-      } else {
-        this.department_id = "";
-      }
-      this.pageNumber = 1;
-      this.getPagingAsset();
-    },
-    /**
-     * lấy thông tin phòng ban từ combobox
-     * AUTHOR: HTTHOA(28/02/2023)
-     */
-    selectItemCategory(value) {
-      if (value.prescription_category_id) {
-        this.prescription_category_id = value.prescription_category_id;
-      } else {
-        this.prescription_category_id = "";
-      }
-      this.pageNumber = 1;
-      this.getPagingAsset();
-    },
-    /**
      * hiển thị popup
      * AUTHOR: HTTHOA(28/02/2023)
      */
@@ -661,20 +510,7 @@ export default {
       this.listRecord = [];
       this.oldData = [];
     },
-    /**
-     * nhấn nút xóa
-     * AUTHOR: HTTHOA(88/03/2023)
-     */
-    onClickDelete() {
-      if (this.listRecord.length < 1) {
-        this.showPopup(true);
-        this.msgError = ErrorMsg.NotChooseProperty;
-        this.closeStatus = CloseST.DeleteCloseNotChoose;
-        this.btnName = btnPopup.Agree;
-      } else {
-        this.showPopup(false);
-      }
-    },
+   
 
     /**
      *
@@ -686,7 +522,7 @@ export default {
       this.pageDefault = e.target.getAttribute("pageSize");
       this.showPage(false);
       this.pageNumber = 1;
-      this.getPagingAsset();
+      this.getRecords();
     },
 
     /**
@@ -713,30 +549,38 @@ export default {
      */
     onClickSearch() {
       this.pageNumber = 1;
-      this.getPagingAsset();
+      this.getRecords();
     },
     /**
      * lấy số bản ghi trên 1 trang số trang và tìm kiếm trên api
      * AUTHOR: HTTHOA(11/03/2023)
      */
-  
 
-    getPagingAsset() {
-      debugger
+    getRecords() {
+      debugger;
       var me = this;
       me.isShowLoad = true;
-      var url="https://localhost:44371/api/Records/Filter"
+      var url = "https://localhost:44371/api/Records/Filter";
       axios({
         url: `${url}?keyword=${this.txtSearch}&pageSize=${this.pageDefault}&pageNumber=${this.pageNumber}`,
         method: "post",
         data: [],
       })
-        
         .then(function (res) {
+          
+          
+          if (me.user == 1) {
+            me.records = res.data.Data.filter(
+              (item) => item.PatientName == null || item.PatientID==null
+            );
+           
+          } else {
+            me.records = res.data.Data.filter(
+              (item) => item.PatientName!=null && item.PatientID!=null
+            );
+          }
           me.totalPage = res.data.TotalPages;
-          me.totalRecord = res.data.TotalRecords;
-          me.records = res.data.Data;
-         
+          me.totalRecord = me.records.length;
         })
         .catch(function () {
           console.log(1);
@@ -744,7 +588,7 @@ export default {
     },
     loadData() {
       this.pageNumber = 1;
-      this.getPagingAsset();
+      this.getRecords();
     },
     /**
      * hàm click vào số trang
@@ -752,7 +596,7 @@ export default {
      */
     clickCallback(pageNum) {
       this.pageNumber = pageNum;
-      this.getPagingAsset();
+      this.getRecords();
     },
 
     /**
@@ -764,212 +608,27 @@ export default {
       this.isShowPage = is;
     },
 
-    /**
-     * hiển thị form thêm
-     * AUTHOR: HTTHOA(28/02/2023)
-     */
-    btnAddOnclick() {
-      this.formMode = FormDetailMode.Add;
-      this.name = TitlePopup.Add;
-      this.showForm();
-    },
-    /**
-     * hiển thị form
-     * AUTHOR: HTTHOA(28/02/2023)
-     */
-    showForm() {
-      this.isShow = true;
-    },
-    /**
-     * đóng form
-     * AUTHOR: HTTHOA(28/02/2023)
-     */
-    closeForm() {
-      this.isShow = false;
-      this.loadData();
-    },
+
 
     /**
      * hiển thị form chỉnh sửa
      * AUTHOR: HTTHOA(28/02/2023)
      */
-    showFormEdit(asset) {
-      this.formMode = FormDetailMode.Edit;
-      this.name = TitlePopup.Edit;
-      this.isShow = true;
-      this.assetSelected = asset;
-      this.prescription_id = asset.prescription_id;
-    },
-    /**
-     * hiển thị form nhân bản
-     * AUTHOR: HTTHOA(28/02/2023)
-     */
-    showReplication(asset) {
-      this.formMode = FormDetailMode.Replication;
-      this.name = TitlePopup.Replication;
-      this.isShow = true;
-      this.assetSelected = asset;
-      this.prescription_id = asset.prescription_id;
-    },
-    /**
-     * đóng form
-     * AUTHOR: HTTHOA (20/03/2023)
-     */
-    hideForm(value) {
-      this.isShow = value;
-      this.loadData();
-    },
-    /**
-     * thêm phần tử xóa và bỏ khi đã được chọn
-     * AUTHOR: HTTHOA (20/03/2023)
-     */
-    selectItemToList(asset) {
-      try {
-        this.currentprescription = asset;
-
-        // this.indexFocus = this.records.indexOf(asset);
-        if (!this.listRecord.includes(asset)) {
-          //thực hiện chọn
-          this.listRecord.push(asset);
-        } else {
-          //thực hiện bỏ chọn
-          this.listRecord = this.listRecord.filter((a) => {
-            return a !== asset;
-          });
-
-          this.currentprescription =
-            this.listRecord[this.listRecord.length - 1];
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    },
-    /**
-     * hàm chọn 1 item thêm vào mảng xóa
-     * AUTHOR: HTTHOA(28/02/2023)
-     */
-    selectItem(asset) {
-      this.listRecord = [];
-      this.listRecord.push(asset);
-      this.currentprescription = asset;
-    },
-    /**
-     * hàm chọn tất cả item
-     * AUTHOR: HTTHOA(28/02/2023)
-     */
-    selectedAllItem() {
-      try {
-        if (this.listRecord.length < this.records.length) {
-          this.listRecord = this.records;
-        } else {
-          this.listRecord = [];
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    },
-    /**
-     * gọi api xóa 1 bản ghi
-     * AUTHOR: HTTHOA(20/03/2023)
-     */
-    deleteOne(id) {
-      console.log(id);
-    },
-    /**
-     * gọi api xóa nhiều bản ghi
-     * AUTHOR: HTTHOA(20/03/2023)
-     */
-    deleteMultiple() {
-      let listRecordID = [];
+    async showFormEdit(item) {
       var me = this;
-      me.listRecord.filter((asset) => {
-        listRecordID.push(asset.prescription_id);
-      });
+      me.formMode = 2;
+      await me.getMedicaltest(item.RecordID);
+      await me.getTreatment(item.RecordID);
+      me.recordEdit = {
+        ...item,
+        MedicalTests: this.medicaltest,
+        Treatments: this.treatment,
+      };
+      me.isShowEdit = !me.isShowEdit;
     },
-    /**
-     * kiểm tra xóa 1 hay xóa nhiều khi ấn xóa hiện popup confirm
-     * AUTHOR: HTTHOA(20/03/2023)
-     */
-    onClickDeleteMultiple() {
-      try {
-        // kiểm tra danh sách được chọn có bao nhiêu bản ghi và hiển thị thông báo
+    
+  
 
-        if (this.listRecord.length == 0) {
-          this.showPopup(true);
-          this.msgDelete = ErrorMsg.NotChooseProperty;
-          this.closeStatus = CloseST.DeleteCloseNotChoose;
-          this.btnName = btnPopup.ClosePop;
-        } else if (this.listRecord.length == 1) {
-          this.showPopup(true);
-          if (this.listRecord[0].active == 0) {
-            this.msgDelete = NoticeMsg.ConfirmDelet;
-            this.closeStatus = CloseST.DeleteOne;
-            this.btnName = btnPopup.Delete;
-            this.btnNameLeft = btnPopup.No;
-            this.itemDelete = this.listRecord[0].prescription_code;
-          } else {
-            console.log(this.listRecord[0]);
-            // this.getByVoucher(this.listRecord[0].voucher_id)
-            this.msgDelete =
-              "Tài sản có mã  <b>&lt&lt " +
-              this.listRecord[0].prescription_code +
-              " &gt&gt</b> đã phát sinh chứng từ ghi tăng";
-            this.closeStatus = CloseST.DeleteCloseNotChoose;
-            this.btnName = btnPopup.ClosePop;
-          }
-        } else {
-          console.log(this.listRecord);
-          this.showPopup(true);
-          let isDelete = true;
-          for (const item of this.listRecord) {
-            if (item.active == 1) {
-              isDelete = false;
-            }
-          }
-          if (isDelete == false) {
-            if (this.listRecord.length < 10) {
-              this.msgDelete =
-                "<b> 0" +
-                this.listRecord.length +
-                " </b> tài sản được chọn không thể xóa. Vui lòng kiểm tra lại trước khi thực hiện xóa";
-            } else {
-              this.msgDelete =
-                "<b> " +
-                this.listRecord.length +
-                " </b>  tài sản được chọn không thể xóa. Vui lòng kiểm tra lại trước khi thực hiện xóa";
-            }
-            this.closeStatus = CloseST.DeleteCloseNotChoose;
-            this.btnName = btnPopup.ClosePop;
-          } else {
-            this.itemDelete = this.listRecord.length + " tài sản";
-            this.msgDelete = NoticeMsg.ConfirmDelet;
-            this.closeStatus = CloseST.DeleteMulti;
-            this.btnNameLeft = btnPopup.No;
-            this.btnName = btnPopup.Delete;
-          }
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    },
-
-    /**
-     * hàm ktra xem thực hiện xóa 1 hay xóa nhiều
-     * AUTHOR: HTTHOA(20/03/2023)
-     */
-    deleted(value) {
-      console.log(value);
-      this.isShowPopup = value;
-      console.log(this.listRecord.length);
-      this.deleteMultiple();
-      // if (this.listRecord.length == 1) {
-      //   var id = this.listRecord[0].prescription_id;
-      //   console.log(id);
-      //   this.deleteOne(id);
-      // } else {
-      //   this.deleteMultiple();
-      // }
-    },
   },
 };
 </script>

@@ -22,6 +22,9 @@
         <button class="btn button-blue-outline mr-2" @click="onClickCancel()">Huỷ</button>
         <button class="btn button-blue " @click="onclickSave()">Lưu</button>
       </div>
+      <div class="popup-footer" v-if="closeStatus==3">
+        <button class="btn button-blue " @click="onClickCancel()">Đồng ý</button>
+      </div>
     </div>
   </div>
 </template>

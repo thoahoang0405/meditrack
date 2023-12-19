@@ -4,9 +4,9 @@
       <div class="title">
         <h2 class="mr-2 mb-2">Quản lý đơn thuốc</h2>
         <div class="radio-user mb-1">
-          <input class="mr-1" type="radio" value="1" v-model="model.user" />
+          <input class="mr-1" type="radio" value="1" v-model="user" />
           <label class="mr-2" for="1">Tôi</label>
-          <input class="mr-1" type="radio" value="2" v-model="model.user" />
+          <input class="mr-1" type="radio" value="2" v-model="user" />
           <label for="2">Gia đình</label>
         </div>
       </div>
@@ -15,8 +15,10 @@
       <div class="search-fn">
         <input
           type="text"
-          placeholder="Nhập tên cuộc hẹn để tìm kiếm"
+          placeholder="Nhập tên đơn thuốc để tìm kiếm"
           class="input-seach"
+          v-model="txtSearch"
+          @keypress.enter="onClickSearch()"
         />
         <div class="icon-s">
           <span class="icon icon-search-black"></span>
@@ -49,13 +51,13 @@
                   </div>
                 </th>
                 <th class="text-center">{{ tableInfo.ToDate }}</th>
-                <th v-if="model.user != 1">{{ tableInfo.PatientName }}</th>
-                <th>{{ tableInfo.function }}</th>
+                <th v-if="user != 1">{{ tableInfo.PatientName }}</th>
+                <th class="text-center">{{ tableInfo.function }}</th>
               </tr>
             </thead>
 
             <tbody>
-              <tr style="border: none" class="data" v-if="totalRecord == 0" >
+              <tr style="border: none" class="data" v-if="totalRecord == 0">
                 <td colspan="11" class="noData">
                   <div class="no-data">
                     <div class="icon-noData"></div>
@@ -67,12 +69,9 @@
               <tr
                 ref="rowCheck"
                 v-for="(asset, index) of prescriptions"
-                :key="asset.prescription_id"
-                :class="asset.PrescriptionStatus==2 ? 'active-blue' : ''"
+                :key="asset.PrescriptionID"
+                :class="asset.PrescriptionStatus == 2 ? 'active-blue' : ''"
                 @dblclick="showFormEdit(asset)"
-                @contextmenu="onClickContextMenu(asset, $event)"
-                @mousedown.prevent.ctrl="mouseDown(asset)"
-                @mouseup.prevent.ctrl="mouseUp(asset)"
                 style="max-height: 38px; box-sizing: border-box"
               >
                 <td
@@ -121,7 +120,7 @@
                   "
                   :class="genderClass(asset.PrescriptionStatus)"
                 >
-                  {{ formatEnum(asset.PrescriptionStatus)  }}
+                  {{ formatEnum(asset.PrescriptionStatus) }}
                 </td>
 
                 <td
@@ -160,11 +159,11 @@
                   "
                   class="text-center"
                 >
-                  {{formatDate(asset.ToDate)  }}
+                  {{ formatDate(asset.ToDate) }}
                 </td>
 
                 <td
-                  v-if="model.user != 1"
+                  v-if="user != 1"
                   style="
                     min-width: 104px;
                     max-width: 104px;
@@ -227,20 +226,6 @@
                       >
                       </Paginate>
                     </div>
-
-                    <!-- v-model="pageNumber"
-                      :page-count="totalPage"
-                      :page-range="3"
-                      :margin-pages="1"
-                      :click-handler="clickCallback"
-                      :prev-link-class="'page-link'"
-                      :prev-text="'<'"
-                      :prev-class="'page-item'"
-                      :next-link-class="'page-link'"
-                      :next-text="'>'"
-                      :next-class="'page-item'"
-                      :container-class="'pagination'"
-                      :page-class="'page-item'" -->
                   </div>
                 </td>
 
@@ -347,7 +332,7 @@
         <div class="notice-content">
           <div class="text">
             <div class="title-notice">Tổng số đơn thuốc đang sử dụng</div>
-            <div class="count">1</div>
+            <div class="count">{{ prescriptionUsing }}</div>
           </div>
           <img
             src="../../../assets/img/prescription-icon-16.jpg"
@@ -357,7 +342,12 @@
         </div>
       </div>
     </div>
-    <Form v-if="isShowForm == true" @closeForm="isShowForm = false"></Form>
+    <Form
+      v-if="isShowForm == true"
+      @closeForm="isShowForm = false"
+      :data="prescriptionEdit"
+      :formMode="formMode"
+    ></Form>
   </div>
 </template>
 
@@ -366,14 +356,9 @@ import Paginate from "vuejs-paginate-next";
 import MSFunction from "../../../js/common/function";
 import { Table } from "../../../js/common/table";
 import Form from "./PrescriptionForm.vue";
-import axios from 'axios'
-import { FormDetailMode, CloseST } from "../../../js/common/enumeration";
-import {
-  ErrorMsg,
-  btnPopup,
-  TitlePopup,
-  NoticeMsg,
-} from "../../../js/common/resource";
+import axios from "axios";
+import { FormDetailMode } from "../../../js/common/enumeration";
+import { TitlePopup } from "../../../js/common/resource";
 export default {
   name: "Prescription-page",
   components: {
@@ -385,28 +370,16 @@ export default {
   },
   data() {
     return {
+      formMode: 1,
+      prescriptionEdit: {},
       isShowForm: false,
       message: "",
       isShowContextMenu: false,
-      posTop: 10,
-      posLeft: 10,
-      itemDelete: "",
-      isDeleted: 0,
-      keywordDep: "",
-      keywordCate: "",
-      numeric: 0,
-      employee: [],
-      msgError: "",
-      msgDelete: "",
+
       isShow: false,
-      btnName: "",
-      btnNameLeft: "",
-      isShowLoad: false,
-      closeStatus: 0,
+
       isShowPopup: false,
       isShowPage: false,
-      assetSelected: [],
-      prescription_id: "",
       tableInfo: Table,
       name: "",
       selectedItems: [], // các item được chọn
@@ -417,33 +390,13 @@ export default {
       isActive: "20",
       pageDefault: 20,
       prescriptions: [],
-      oldData: [],
-      newCode: "",
       listPrescription: [],
       prescription: {},
-      prescriptionCategory: [],
-      prescription_category_code: "",
-      prescription_category_id: "",
-      prescription_category_name: "",
-      departments: [],
-      department_code: "",
-      department_name: "",
-      department_id: "",
       currentprescription: {},
       txtSearch: "",
-      placeholderName: "",
-      totalQuantity: 0,
-      totalCost: 0,
-      totalImprover: 0,
-      listOnMouseDown: {},
-      listOnMouseUp: {},
-      oldKeyDepartment: "",
-      active: null,
-      array: [],
-      voucher_code: "",
-      model: {
-        user: 1,
-      },
+      listMedications: [],
+      user: 1,
+      prescriptionUsing:0
     };
   },
   watch: {
@@ -454,32 +407,59 @@ export default {
     txtSearch: function () {
       if (this.txtSearch == "") {
         this.pageNumber = 1;
-        this.getPagingAsset();
+        this.getPrescriptions();
       }
     },
-
+    user: function () {
+      if (this.user == 1) {
+        this.getPrescriptions()
+      }else{
+        this.getPrescriptions()
+      }
+    },
     prescriptions: function () {
       if (this.prescription.department_id == "") {
-        this.getPagingAsset();
+        this.getPrescriptions();
       }
       if (this.prescription.prescription_category_id == "") {
-        this.getPagingAsset();
+        this.getPrescriptions();
       }
     },
   },
   created() {
-    this.getPagingAsset();
+    this.getPrescriptions();
+  },
+  mounted() {
+    this.emitter.on("loadDataPrescription", () => {
+      this.getPrescriptions();
+    });
   },
   methods: {
-       formatDate(date) {
+    formatDate(date) {
       return MSFunction.formatDate(date);
     },
     show() {
+      this.formMode = 1;
       this.isShowForm = !this.isShowForm;
     },
+    async getMedications(id) {
+      var url = "https://localhost:44371/api/Prescriptions/medications?id=";
+      await axios
+        .get(`${url}${id}`)
+        .then((response) => {
+          this.listMedications = response.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
 
-    showFormEdit(item) {
-      this.isShowForm = !this.isShowForm;
+    async showFormEdit(item) {
+      var me = this;
+      me.formMode = 2;
+      await me.getMedications(item.PrescriptionID);
+      me.prescriptionEdit = { ...item, Medications: this.listMedications };
+      me.isShowForm = !me.isShowForm;
     },
     formatEnum(e) {
       var text = "";
@@ -554,38 +534,7 @@ export default {
         console.log(err);
       }
     },
-    /**
-     *
-     * chọn trong khoảng đã kéo
-     * AUTHOR: HTTHOA(2/4/2023)
-     */
-    selectMultipleItem(item1, item2) {
-      //đoạn này là lấy những tài sản khi kéo giữ chuột
-      if (
-        this.prescriptions.includes(item1) &&
-        this.prescriptions.includes(item2)
-      ) {
-        // lấy vị trí của 2 item trong mảng prescription
-        //start là vị trí đầu khi down ctrl
-        let startIndex = this.prescriptions.indexOf(item2);
-        //end là vị trí khi up ctrl
-        let endIndex = this.prescriptions.indexOf(item1);
-        // kiểm tra vị trí bắt đầu và kết thúc nếu bắt đầu lớn hơn kết thúc thì đổi lại
-        if (startIndex > endIndex) {
-          let tmp = startIndex;
-          startIndex = endIndex;
-          endIndex = tmp;
-        }
 
-        // thêm các item chưa có trong mảng xóa từ vị trí bắt đầu đến kết thúc
-        for (let i = startIndex; i <= endIndex; i++) {
-          //nếu trong danh sách chưa gồm tài sản đó thì push vào danh sách
-          if (!this.listPrescription.includes(this.prescriptions[i])) {
-            this.listPrescription.push(this.prescriptions[i]);
-          }
-        }
-      }
-    },
     /**
      * up ctrl thả chuột để lấy vị trí cuối cùng chọn
      * AUTHOR: HTTHOA(2/4/2023)
@@ -602,62 +551,6 @@ export default {
       }
     },
 
-    /**
-     * click lấy vị trí context menu
-     * AUTHOR: HTTHOA(2/04/2023)
-     */
-
-    onClickContextMenu(asset, e) {
-      e.preventDefault();
-      this.selectItem(asset);
-      //  lấy vị trí chuột
-      this.posTop = e.clientY;
-      this.posLeft = e.clientX;
-      this.isShowContextMenu = true;
-    },
-    /**
-     * đóng context menu
-     * AUTHOR: HTTHOA(2/4/2023)
-     */
-    closeContextMenu() {
-      setTimeout(() => {
-        this.isShowContextMenu = false;
-        this.listPrescription = [];
-      }, 1000);
-    },
-    /**
-     * click vào nhân bản trong  chức năng context menu
-     * AUTHOR: HTTHOA(2/4/2023)
-     */
-    onClickReplicationContextMenu() {
-      this.isShowContextMenu = false;
-      this.showReplication(this.currentprescription);
-    },
-    /**
-     * click vào xóa trong  chức năng context menu
-     * AUTHOR: HTTHOA(2/4/2023)
-     */
-    onClickDeleteContextMenu() {
-      this.isShowContextMenu = false;
-      this.onClickDeleteMultiple();
-    },
-    /**
-     * click vào sửa trong  chức năng context menu
-     * AUTHOR: HTTHOA(2/4/2023)
-     */
-    onClickEditContextMenu() {
-      this.isShowContextMenu = false;
-      this.showFormEdit(this.currentprescription);
-    },
-    /**
-     * click vào thêm trong  chức năng context menu
-     * AUTHOR: HTTHOA(2/4/2023)
-     */
-    onClickAddContextMenu() {
-      this.isShowContextMenu = false;
-      this.btnAddOnclick();
-    },
-
     /**focus vào ô search đầu tiên
      * AUTHOR: HTTHOA(27/03/2023)
      */
@@ -667,32 +560,6 @@ export default {
       });
     },
 
-    /**
-     * lấy thông tin phòng ban từ combobox
-     * AUTHOR: HTTHOA(28/02/2023)
-     */
-    selectItemCbb(value) {
-      if (value.department_id) {
-        this.department_id = value.department_id;
-      } else {
-        this.department_id = "";
-      }
-      this.pageNumber = 1;
-      this.getPagingAsset();
-    },
-    /**
-     * lấy thông tin phòng ban từ combobox
-     * AUTHOR: HTTHOA(28/02/2023)
-     */
-    selectItemCategory(value) {
-      if (value.prescription_category_id) {
-        this.prescription_category_id = value.prescription_category_id;
-      } else {
-        this.prescription_category_id = "";
-      }
-      this.pageNumber = 1;
-      this.getPagingAsset();
-    },
     /**
      * hiển thị popup
      * AUTHOR: HTTHOA(28/02/2023)
@@ -710,20 +577,6 @@ export default {
       this.listPrescription = [];
       this.oldData = [];
     },
-    /**
-     * nhấn nút xóa
-     * AUTHOR: HTTHOA(88/03/2023)
-     */
-    onClickDelete() {
-      if (this.listPrescription.length < 1) {
-        this.showPopup(true);
-        this.msgError = ErrorMsg.NotChooseProperty;
-        this.closeStatus = CloseST.DeleteCloseNotChoose;
-        this.btnName = btnPopup.Agree;
-      } else {
-        this.showPopup(false);
-      }
-    },
 
     /**
      *
@@ -735,7 +588,7 @@ export default {
       this.pageDefault = e.target.getAttribute("pageSize");
       this.showPage(false);
       this.pageNumber = 1;
-      this.getPagingAsset();
+      this.getPrescriptions();
     },
 
     /**
@@ -762,25 +615,33 @@ export default {
      */
     onClickSearch() {
       this.pageNumber = 1;
-      this.getPagingAsset();
+      this.getPrescriptions();
     },
-  
-    getPagingAsset() {
 
+    getPrescriptions() {
       var me = this;
       me.isShowLoad = true;
-      var url="https://localhost:44371/api/Prescriptions/Filter"
+      var url = "https://localhost:44371/api/Prescriptions/Filter";
       axios({
         url: `${url}?keyword=${this.txtSearch}&pageSize=${this.pageDefault}&pageNumber=${this.pageNumber}`,
         method: "post",
         data: [],
       })
-        
         .then(function (res) {
+
+          if (me.user == 1) {
+            me.prescriptions = res.data.Data.filter(
+              (item) => item.PatientName == null || item.PatientID==null
+            );
+            me.prescriptionUsing= me.prescriptions.filter(item=>item.PrescriptionStatus==2).length
+          } else {
+            me.prescriptions = res.data.Data.filter(
+              (item) => item.PatientName!=null && item.PatientID!=null
+            );
+            me.prescriptionUsing= me.prescriptions.filter(item=>item.PrescriptionStatus==2).length
+          }
           me.totalPage = res.data.TotalPages;
-          me.totalRecord = res.data.TotalRecords;
-          me.prescriptions = res.data.Data;
-         
+          me.totalRecord = me.prescriptions.length;
         })
         .catch(function () {
           console.log(1);
@@ -788,7 +649,7 @@ export default {
     },
     loadData() {
       this.pageNumber = 1;
-      this.getPagingAsset();
+      this.getPrescriptions();
     },
     /**
      * hàm click vào số trang
@@ -796,7 +657,7 @@ export default {
      */
     clickCallback(pageNum) {
       this.pageNumber = pageNum;
-      this.getPagingAsset();
+      this.getPrescriptions();
     },
 
     /**
@@ -834,185 +695,12 @@ export default {
     },
 
     /**
-     * hiển thị form chỉnh sửa
-     * AUTHOR: HTTHOA(28/02/2023)
-     */
-    showFormEdit(asset) {
-      this.formMode = FormDetailMode.Edit;
-      this.name = TitlePopup.Edit;
-      this.isShow = true;
-      this.assetSelected = asset;
-      this.prescription_id = asset.prescription_id;
-    },
-    /**
-     * hiển thị form nhân bản
-     * AUTHOR: HTTHOA(28/02/2023)
-     */
-    showReplication(asset) {
-      this.formMode = FormDetailMode.Replication;
-      this.name = TitlePopup.Replication;
-      this.isShow = true;
-      this.assetSelected = asset;
-      this.prescription_id = asset.prescription_id;
-    },
-    /**
      * đóng form
      * AUTHOR: HTTHOA (20/03/2023)
      */
     hideForm(value) {
       this.isShow = value;
       this.loadData();
-    },
-    /**
-     * thêm phần tử xóa và bỏ khi đã được chọn
-     * AUTHOR: HTTHOA (20/03/2023)
-     */
-    selectItemToList(asset) {
-      try {
-        this.currentprescription = asset;
-
-        // this.indexFocus = this.prescriptions.indexOf(asset);
-        if (!this.listPrescription.includes(asset)) {
-          //thực hiện chọn
-          this.listPrescription.push(asset);
-        } else {
-          //thực hiện bỏ chọn
-          this.listPrescription = this.listPrescription.filter((a) => {
-            return a !== asset;
-          });
-
-          this.currentprescription =
-            this.listPrescription[this.listPrescription.length - 1];
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    },
-    /**
-     * hàm chọn 1 item thêm vào mảng xóa
-     * AUTHOR: HTTHOA(28/02/2023)
-     */
-    selectItem(asset) {
-      this.listPrescription = [];
-      this.listPrescription.push(asset);
-      this.currentprescription = asset;
-    },
-    /**
-     * hàm chọn tất cả item
-     * AUTHOR: HTTHOA(28/02/2023)
-     */
-    selectedAllItem() {
-      try {
-        if (this.listPrescription.length < this.prescriptions.length) {
-          this.listPrescription = this.prescriptions;
-        } else {
-          this.listPrescription = [];
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    },
-    /**
-     * gọi api xóa 1 bản ghi
-     * AUTHOR: HTTHOA(20/03/2023)
-     */
-    deleteOne(id) {
-      console.log(id);
-    },
-    /**
-     * gọi api xóa nhiều bản ghi
-     * AUTHOR: HTTHOA(20/03/2023)
-     */
-    deleteMultiple() {
-      let listPrescriptionID = [];
-      var me = this;
-      me.listPrescription.filter((asset) => {
-        listPrescriptionID.push(asset.prescription_id);
-      });
-    },
-    /**
-     * kiểm tra xóa 1 hay xóa nhiều khi ấn xóa hiện popup confirm
-     * AUTHOR: HTTHOA(20/03/2023)
-     */
-    onClickDeleteMultiple() {
-      try {
-        // kiểm tra danh sách được chọn có bao nhiêu bản ghi và hiển thị thông báo
-
-        if (this.listPrescription.length == 0) {
-          this.showPopup(true);
-          this.msgDelete = ErrorMsg.NotChooseProperty;
-          this.closeStatus = CloseST.DeleteCloseNotChoose;
-          this.btnName = btnPopup.ClosePop;
-        } else if (this.listPrescription.length == 1) {
-          this.showPopup(true);
-          if (this.listPrescription[0].active == 0) {
-            this.msgDelete = NoticeMsg.ConfirmDelet;
-            this.closeStatus = CloseST.DeleteOne;
-            this.btnName = btnPopup.Delete;
-            this.btnNameLeft = btnPopup.No;
-            this.itemDelete = this.listPrescription[0].prescription_code;
-          } else {
-            console.log(this.listPrescription[0]);
-            // this.getByVoucher(this.listPrescription[0].voucher_id)
-            this.msgDelete =
-              "Tài sản có mã  <b>&lt&lt " +
-              this.listPrescription[0].prescription_code +
-              " &gt&gt</b> đã phát sinh chứng từ ghi tăng";
-            this.closeStatus = CloseST.DeleteCloseNotChoose;
-            this.btnName = btnPopup.ClosePop;
-          }
-        } else {
-          console.log(this.listPrescription);
-          this.showPopup(true);
-          let isDelete = true;
-          for (const item of this.listPrescription) {
-            if (item.active == 1) {
-              isDelete = false;
-            }
-          }
-          if (isDelete == false) {
-            if (this.listPrescription.length < 10) {
-              this.msgDelete =
-                "<b> 0" +
-                this.listPrescription.length +
-                " </b> tài sản được chọn không thể xóa. Vui lòng kiểm tra lại trước khi thực hiện xóa";
-            } else {
-              this.msgDelete =
-                "<b> " +
-                this.listPrescription.length +
-                " </b>  tài sản được chọn không thể xóa. Vui lòng kiểm tra lại trước khi thực hiện xóa";
-            }
-            this.closeStatus = CloseST.DeleteCloseNotChoose;
-            this.btnName = btnPopup.ClosePop;
-          } else {
-            this.itemDelete = this.listPrescription.length + " tài sản";
-            this.msgDelete = NoticeMsg.ConfirmDelet;
-            this.closeStatus = CloseST.DeleteMulti;
-            this.btnNameLeft = btnPopup.No;
-            this.btnName = btnPopup.Delete;
-          }
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    },
-
-    /**
-     * hàm ktra xem thực hiện xóa 1 hay xóa nhiều
-     * AUTHOR: HTTHOA(20/03/2023)
-     */
-    deleted(value) {
-      console.log(value);
-      this.isShowPopup = value;
-      console.log(this.listPrescription.length);
-      this.deleteMultiple();
-      // if (this.listPrescription.length == 1) {
-      //   var id = this.listPrescription[0].prescription_id;
-      //   console.log(id);
-      //   this.deleteOne(id);
-      // } else {
-      //   this.deleteMultiple();
-      // }
     },
   },
 };
@@ -1217,7 +905,7 @@ tr .data:hover {
   justify-content: center;
   align-items: center;
 }
-.active-blue{
+.active-blue {
   background-color: #f0faff;
 }
 @import url(./Prescription.scss);

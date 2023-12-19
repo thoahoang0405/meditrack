@@ -17,6 +17,8 @@
           type="text"
           placeholder="Nhập tên cuộc hẹn để tìm kiếm"
           class="input-seach"
+          v-model="keyword"
+          @keypress.enter="getAppointment()"
         />
         <div class="icon-s">
           <span class="icon icon-search-black"></span>
@@ -75,7 +77,7 @@
                 </div>
               </div>
               <div class="footer-item">
-                <button class="btn delete-btn" @click="deleteAppointment">
+                <button class="btn delete-btn" @click="deleteAppointment(item.AppointmentID)">
                   Huỷ bỏ
                 </button>
                 <button class="btn update-btn" @click="showFormEdit(item)">
@@ -103,10 +105,9 @@
       v-if="isShowPopup"
       :msg="msgError"
       :name="btnName"
-
       :close="1"
       @hidePopup="isShowPopup = false"
-      @isDelete="deleteAppointment()"
+      @isDelete="deletedAppointment()"
     ></Popup>
   </div>
 </template>
@@ -125,8 +126,15 @@ export default {
     Form,
     Popup,
   },
+  mounted() {
+    this.emitter.on("loadData", () => {
+      this.getAppointment();
+    });
+    
+  },
   data() {
     return {
+      keyword:'',
       formMode:1,
       btnName: "Có",
       msgError:
@@ -136,7 +144,7 @@ export default {
       isShowForm: false,
       
         user: 1,
-     
+        appointmentDeleted:null,
       listPatient: [],
       patients: [
       
@@ -214,7 +222,9 @@ export default {
   created() {
     this.getAppointment();
     this.getComboboxPatient();
+    
   },
+ 
   watch: {
    
     user: function () {
@@ -224,15 +234,39 @@ export default {
         this.getAppointment()
       }
     },
-
+    keyword:function(){
+      if(this.keyword==''){
+        this.getAppointment()
+      }
+    }
     
   },
   methods: {
     formatDate(date) {
       return MSFunction.formatDate(date);
     },
-    deleteAppointment() {
+    deletedAppointment(){
+      
       this.isShowPopup = !this.isShowPopup;
+     var url="https://localhost:44371/api/Appoinments" 
+     axios
+        .delete(`${url}/${this.appointmentDeleted}`)
+        .then((response) => {
+          this.getAppointment();
+          this.$toast.open({
+          message: 'Huỷ bỏ cuộc hẹn thành công.',
+          type: 'success',
+          position:'top'
+      });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+ 
+    },
+    deleteAppointment(val) {
+      this.isShowPopup = !this.isShowPopup;
+      this.appointmentDeleted=val
     },
     showForm() {
       this.isShowForm = !this.isShowForm;
@@ -301,8 +335,9 @@ export default {
     getAppointment() {
       debugger;
       var me = this;
+      var url ="https://localhost:44371/api/Appoinments/appointments?keyword=";
       axios
-        .get("https://localhost:44371/api/Appoinments")
+        .get(`${url}${this.keyword}`)
         .then(function (res) {
           if (res.data.length > 0) {
             me.listAppointment = res.data;

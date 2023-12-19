@@ -488,5 +488,29 @@ input[disabled]:hover{
     font-size: 11px;
   }
   .border-error{
-    border:1px solid red;
+    border:1px solid red !important;
   }
+  .el-input__wrapper,
+  .el-input__wrapper:hover {
+    box-shadow:none !important;
+}
+.el-input__wrapper{
+  color: #767676
+}
+input{
+  border-radius: 5px;
+  padding-left: 8px;
+  font-weight: 100 !important;
+  border:1px solid #07b6c4
+}
+.el-input__inner {
+ 
+  color: #000 !important;
+   font-size: 13px !important;
+}
+.el-input.el-input--prefix.el-input--suffix.el-date-editor.el-date-editor--date.el-tooltip__trigger.el-tooltip__trigger {
+  width: 105% !important;
+  border:1px solid #07b6c4;
+  border-radius: 5px;
+
+}

@@ -13,7 +13,7 @@
             <div class="w-50 gr-item mr-2">
               <div class="label">Tên đơn thuốc</div>
               <input
-                class="mt-1  w-100"
+                class="mt-1 w-100"
                 type="text"
                 ref="PrescriptionName"
                 :class="error.PrescriptionName != '' ? 'border-error' : ''"
@@ -27,15 +27,18 @@
             </div>
             <div class="w-25 gr-item mr-2 ml-2">
               <div class="label">Ngày y lệnh</div>
-              <input
-                class="mt-1 w-100"
-                type="date"
-                ref="PrescriptionDate"
-                :class="error.PrescriptionDate != '' ? 'border-error' : ''"
-                @blur="validate('PrescriptionDate')"
-                @focus="$refs.PrescriptionDate.select()"
-                v-model="prescriptions.PrescriptionDate"
-              />
+              <div class="mt-1 w-100">
+                <el-date-picker
+                  type="date"
+                  ref="PrescriptionDate"
+                  :class="error.PrescriptionDate != '' ? 'border-error' : ''"
+                  @blur="validate('PrescriptionDate')"
+                  placeholder="DD/MM/YYYY"
+                  format="DD/MM/YYYY"
+                  value-format="YYYY-MM-DD"
+                  v-model="prescriptions.PrescriptionDate"
+                />
+              </div>
               <p class="error" v-if="error.PrescriptionDate != ''">
                 {{ error.PrescriptionDate }}
               </p>
@@ -49,21 +52,25 @@
                   :code="'PatientName'"
                   :fieldCode="'PatientName'"
                   :fieldName="'PatientName'"
+                  :value="prescriptions.PatientName"
+                @selectedItem="selectItemCbb"
                 />
               </div>
             </div>
           </div>
           <div class="group-controll mt-2">
-            <div class="w-25 gr-item ml-2">
+            <div class="w-30 gr-item ml-2" v-if="formMode == 2">
               <div class="label">Trạng thái đơn thuốc</div>
               <div class="mb-1" style="display: flex">
-                <input class="mr-1 mt-2" type="radio" value="3" />
-                <p class="mr-2" for="1">Đã hoàn thành</p>
-                <input class="mr-1 mt-2" type="radio" value="4" />
-                <p for="2">Bỏ lỡ</p>
+                <input class="mr-1 " type="radio" value="2" style="margin-top: 10px;" v-model="prescriptions.PrescriptionStatus" />
+                <p class="mr-2 " for="1">Đang sử dụng</p>
+                <input class="mr-1 " type="radio" value="3" style="margin-top: 10px" v-model="prescriptions.PrescriptionStatus" />
+                <p class="mr-2 " for="1">Đã hoàn thành</p>
+                <input class="mr-1 " type="radio" value="4" style="margin-top: 10px" v-model="prescriptions.PrescriptionStatus" />
+                <p for="2 ">Bỏ lỡ</p>
               </div>
             </div>
-            <div class="w-25 gr-item mr-2">
+            <div class="gr-item mr-2" :class="formMode == 2 ? 'w-25' : 'w-50'">
               <div class="label">Bác sĩ chỉ định</div>
               <input
                 class="mt-1 w-100"
@@ -80,30 +87,38 @@
             </div>
             <div class="w-25 gr-item mr-2 ml-2">
               <div class="label">Sử dụng từ ngày</div>
-              <input
-                class="mt-1 w-100"
-                type="date"
-                ref="FromDate"
-                :class="error.FromDate != '' ? 'border-error' : ''"
-                @blur="validate('FromDate')"
-                @focus="$refs.FromDate.select()"
-                v-model="prescriptions.FromDate"
-              />
+              
+              <div class="mt-1 w-100">
+                <el-date-picker
+                  type="date"
+                  ref="FromDate"
+                  :class="error.FromDate != '' ? 'border-error' : ''"
+                  @blur="validate('FromDate')"
+                  v-model="prescriptions.FromDate"
+                  placeholder="DD/MM/YYYY"
+                  format="DD/MM/YYYY"
+                  value-format="YYYY-MM-DD"
+                />
+              </div>
               <p class="error" v-if="error.FromDate != ''">
                 {{ error.FromDate }}
               </p>
             </div>
-            <div class="w-25 gr-item ml-2">
+            <div class="w-25 gr-item ml-2 mr-2">
               <div class="label">Sử dụng đến ngày</div>
-              <input
-                class="mt-1 w-100"
-                type="date"
-                ref="ToDate"
-                :class="error.ToDate != '' ? 'border-error' : ''"
-                @blur="validate('ToDate')"
-                @focus="$refs.ToDate.select()"
-                v-model="prescriptions.ToDate"
-              />
+
+              <div class="mt-1 w-100">
+                <el-date-picker
+                  type="date"
+                  ref="ToDate"
+                  :class="error.ToDate != '' ? 'border-error' : ''"
+                  @blur="validate('ToDate')"
+                  v-model="prescriptions.ToDate"
+                  placeholder="DD/MM/YYYY"
+                  format="DD/MM/YYYY"
+                  value-format="YYYY-MM-DD"
+                />
+              </div>
               <p class="error" v-if="error.ToDate != ''">
                 {{ error.ToDate }}
               </p>
@@ -112,58 +127,62 @@
           <div class="group-controll mt-2">
             <div class="w-50 gr-item mr-2">
               <div class="label">Bệnh viện kê đơn</div>
-              <input class="mt-1 w-100" type="text" />
+              <input
+                class="mt-1 w-100"
+                v-model="prescriptions.CreatedByAddress"
+                type="text"
+              />
             </div>
-            <div class="w-50 gr-item ml-2">
-              <div class="label">Gi chú</div>
-              <input class="mt-1 w-100" type="text" />
+            <div class="w-50 gr-item ml-2 mr-2">
+              <div class="label">Ghi chú</div>
+              <input
+                class="mt-1 w-100"
+                type="text"
+                v-model="prescriptions.Notes"
+              />
             </div>
           </div>
           <div class="group-controll mt-2">
-            <div class="w-100 gr-item">
+            <div class="w-100 gr-item mr-2">
               <div class="label">Chẩn đoán</div>
-              <input class="mt-1 w-100" type="text" />
+              <input
+                class="mt-1 w-100"
+                type="text"
+                v-model="prescriptions.Diagnose"
+              />
             </div>
           </div>
         </div>
         <div class="detail mt-2">
-            <div class="header-detail">
-                <div>Chi tiết</div>
-                 <div class="icon ml-2 mt-1" @click="isShowDetail=!isShowDetail" :class="isShowDetail==true?'icon-down-blue' :'icon-up-blue'" ></div>
-                 </div>
-            <div class="table-detail" v-if="isShowDetail">
-
-                <div class="header-table mt-2 mb-1">
-                    <div class="item-table" style="min-width: 158px;">Tên thuốc</div>
-                    <div class="item-table" style="min-width: 88px;">Đơn vị</div>
-                    <div class="item-table" style="min-width: 88px;">Buổi sáng</div>
-                    <div class="item-table" style="min-width: 88px;">Buổi chiều</div>
-                    <div class="item-table" style="min-width: 208px;">Cách sử dụng thuốc</div>
-                    <div class="item-table" style="min-width: 208px;">Cảnh báo </div>
-                    <div class="item-table" style="min-width: 208px;">Ngày hết hạn</div>
-                    <div class="item-table" style="min-width: 208px;">Tác dụng phụ của thuốc</div>
-                    <div class="item-table" style="min-width: 508px;">Ghi chú</div>
-    
-                </div>
-                <div class="main-table mt-2 mb-2" v-for="item,index in prescriptions.Medications" :key="index">
-                    <input class="item-table" type="text"  v-model="item.MedicationName" style="min-width: 150px;"/>
-                    <input class="item-table" type="text" v-model="item.Unit" style="min-width: 80px;">
-                    <input class="item-table" type="number" v-model="item.QuantityForMorning" style="min-width: 80px;">
-                    <input class="item-table" type="number" v-model="item.QuantityForAfternoon" style="min-width: 80px;">
-                    <input class="item-table" type="text" v-model="item.RouteOfAdministration" style="min-width: 200px;">
-                    <input class="item-table" type="text" v-model="item.Warnings" style="min-width: 200px;">
-                    <input class="item-table" type="date" v-model="item.ExpiryDate" style="min-width: 200px;">
-                    <input class="item-table" type="text" v-model="item.SideEffects" style="min-width: 200px;">
-                    <input class="item-table" type="text" v-model="item.Notes" style="min-width: 500px;">
-                    <div class="function-table-detail function-table">
-                        <div class="icon icon-plus" @click="addRowDetail()"></div>
-                        <div v-if="index>0" class="icon icon-minus" @click="removeDetail(item,index)"></div>
-                    </div>
-                </div>
+          <div class="header-detail">
+            <div>Chi tiết</div>
+            <div
+              class="icon ml-2 mt-1"
+              @click="isShowDetail = !isShowDetail"
+              :class="isShowDetail == true ? 'icon-down-blue' : 'icon-up-blue'"
+            ></div>
+          </div>
+          <div class="table-detail" v-if="isShowDetail">
+            <div class="header-table mt-2 mb-1">
+              <div class="item-table" style="min-width: 168px">Tên thuốc</div>
+              <div class="item-table" style="min-width: 90px">Đơn vị</div>
+              <div class="item-table" style="min-width: 90px">Buổi sáng</div>
+              <div class="item-table" style="min-width: 90px">Buổi chiều</div>
+              <div class="item-table" style="min-width: 210px">
+                Cách sử dụng thuốc
+              </div>
+              <div class="item-table" style="min-width: 210px">Cảnh báo</div>
+              <div class="item-table" style="min-width: 210px">
+                Ngày hết hạn
+              </div>
+              <div class="item-table" style="min-width: 210px">
+                Tác dụng phụ của thuốc
+              </div>
+              <div class="item-table" style="min-width: 510px">Ghi chú</div>
             </div>
             <div
               class="main-table mt-2 mb-2"
-              v-for="(item, index) in listMedication"
+              v-for="(item, index) in prescriptions.Medications"
               :key="index"
             >
               <input
@@ -202,12 +221,17 @@
                 v-model="item.Warnings"
                 style="min-width: 200px"
               />
-              <input
-                class="item-table"
-                type="date"
-                v-model="item.ExpiryDate"
-                style="min-width: 200px"
-              />
+              <div class="mr-2"  style="min-width: 200px">
+                <el-date-picker
+                class="item-table "
+                  type="date"
+                  v-model="item.ExpiryDate"
+                  placeholder="DD/MM/YYYY"
+                  format="DD/MM/YYYY"
+                  value-format="YYYY-MM-DD"
+                />
+              </div>
+            
               <input
                 class="item-table"
                 type="text"
@@ -230,45 +254,131 @@
               </div>
             </div>
           </div>
+          <div
+            class="main-table mt-2 mb-2"
+            v-for="(item, index) in listMedication"
+            :key="index"
+          >
+            <input
+              class="item-table"
+              type="text"
+              v-model="item.MedicationName"
+              style="min-width: 150px"
+            />
+            <input
+              class="item-table"
+              type="text"
+              v-model="item.Unit"
+              style="min-width: 80px"
+            />
+            <input
+              class="item-table"
+              type="number"
+              v-model="item.QuantityForMorning"
+              style="min-width: 80px"
+            />
+            <input
+              class="item-table"
+              type="number"
+              v-model="item.QuantityForAfternoon"
+              style="min-width: 80px"
+            />
+            <input
+              class="item-table"
+              type="text"
+              v-model="item.RouteOfAdministration"
+              style="min-width: 200px"
+            />
+            <input
+              class="item-table"
+              type="text"
+              v-model="item.Warnings"
+              style="min-width: 200px"
+            />
+            <input
+              class="item-table"
+              type="date"
+              v-model="item.ExpiryDate"
+              style="min-width: 200px"
+            />
+            <input
+              class="item-table"
+              type="text"
+              v-model="item.SideEffects"
+              style="min-width: 200px"
+            />
+            <input
+              class="item-table"
+              type="text"
+              v-model="item.Notes"
+              style="min-width: 500px"
+            />
+            <div class="function-table-detail function-table">
+              <div class="icon icon-plus" @click="addRowDetail()"></div>
+              <div
+                v-if="index > 0"
+                class="icon icon-minus"
+                @click="removeDetail(item, index)"
+              ></div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="form-footer mt-2">
-        <button class="btn button-blue">Lưu</button>
-        <button class="btn button-blue-outline mr-2">Huỷ</button>
+        <button class="btn button-blue" @click="save()">Lưu</button>
+        <button class="btn button-blue-outline mr-2" @click="closeForm">
+          Huỷ
+        </button>
       </div>
-    
+    </div>
+    <Popup
+      v-if="isShowPopup"
+      :msg="msgError"
+      :name="btnName"
+      :close="3"
+      @hidePopup="isShowPopup = false"
+    ></Popup>
   </div>
 </template>
 <script>
 import Combobox from "../../base/BaseCombobox.vue";
-import axios from "axios"
+import Popup from "../../base/BasePopup.vue";
+import axios from "axios";
+import { ElDatePicker } from "element-plus";
 export default {
-  props: ["data"],
+  props: ["data", "formMode"],
   components: {
     Combobox,
+    Popup,
+    ElDatePicker,
   },
   data() {
     return {
-        isShowDetail:true,
-        prescriptions:{
-
-          Medications:[
-              {
-                  MedicationID:"",
-                  MedicationName:"",
-                  QuantityForMorning:"",
-                  QuantityForAfternoon:"",
-                  Unit:"",
-                  Notes:"",
-                  RouteOfAdministration:"",
-                  Warnings:"",
-                  ExpiryDate:"",
-                  SideEffects:"",
-              }
-          ],
-        },
-        PatientName:'',
-        PatientID:'',
+      isShowPopup: false,
+      editMode: 1,
+      isShowDetail: true,
+      prescriptions: {
+        UserID: "443f7b5d-99c2-11ee-bfeb-1866da3df2b8",
+        PrescriptionsID: "00000000-0000-0000-0000-000000000000",
+        PrescriptionStatus:1,
+        Medications: [
+          {
+            MedicationID: "00000000-0000-0000-0000-000000000000",
+            MedicationName: "",
+            QuantityForMorning: 0,
+            QuantityForAfternoon: 0,
+            Unit: "",
+            Notes: "",
+            RouteOfAdministration: "",
+            Warnings: "",
+            ExpiryDate: null,
+            SideEffects: "",
+          },
+        ],
+      },
+      msgError: "",
+      PatientName: "",
+      PatientID: "",
       patients: [
         {
           PatientId: "7343483484",
@@ -298,43 +408,103 @@ export default {
     };
   },
   created() {
-    debugger
-    this.getComboboxPatient()
+    this.getComboboxPatient();
+    this.editMode = this.formMode;
+    if (this.editMode == 2) {
+      this.prescriptions = this.data;
+    } else {
+      this.prescriptions = {
+        UserID: "443f7b5d-99c2-11ee-bfeb-1866da3df2b8",
+        PrescriptionsID: "00000000-0000-0000-0000-000000000000",
+        Medications: [
+          {
+            MedicationID: "00000000-0000-0000-0000-000000000000",
+            MedicationName: "",
+            QuantityForMorning: 0,
+            QuantityForAfternoon: 0,
+            Unit: "",
+            Notes: "",
+            RouteOfAdministration: "",
+            Warnings: "",
+            ExpiryDate: null,
+            SideEffects: "",
+          },
+        ],
+      };
+    }
   },
   methods: {
-    
-     selectItemCbb(value) {
-      debugger
-      if (value.PatientName) {
-        this.PatientName = value.PatientName;
+    save() {
+      var me = this;
+      console.log(this.prescriptions);
+      if (
+        !this.prescriptions.Medications ||
+        this.prescriptions.Medications.length <= 0 ||
+        (this.prescriptions.Medications.length > 0 &&
+          this.prescriptions.Medications[0].MedicationName == "")
+      ) {
+        this.msgError = "Cần nhật ít nhất 1 loại thuốc sử dụng theo đơn thuốc.";
+        this.isShowPopup = true;
       } else {
-        this.PatientName = "";
+        if (this.validateAll()) {
+          if(me.editMode==1){
+            var url = "https://localhost:44371/api/Prescriptions/user";
+          axios({
+            url: `${url}`,
+            method: "post",
+            data: me.prescriptions,
+          })
+            .then(function (res) {
+              me.$emit("closeForm", false);
+              me.emitter.emit("loadDataPrescription");
+              me.$toast.open({
+                message: "Cất dữ liệu thành công.",
+                type: "success",
+                position: "top",
+              });
+            })
+            .catch(function (res) {
+              console.log(res);
+            });
+          }else{
+            var url = "https://localhost:44371/api/Prescriptions/user";
+          axios({
+            url: `${url}`,
+            method: "put",
+            data: me.prescriptions,
+          })
+            .then(function (res) {
+              me.$emit("closeForm", false);
+              me.emitter.emit("loadDataPrescription");
+              me.$toast.open({
+                message: "Cất dữ liệu thành công.",
+                type: "success",
+                position: "top",
+              });
+            })
+            .catch(function (res) {
+              console.log(res);
+            });
+          }
+         
+        }
       }
-    
+    },
+    selectItemCbb(value) {
+      if (value) {
+        this.prescriptions.PatientName = value.PatientName;
+        this.prescriptions.PatientID = value.PatientID;
+      } else {
+        this.prescriptions.PatientName = "";
+        this.prescriptions.PatientID = "";
+      }
     },
     closeForm() {
       this.$emit("closeForm", false);
     },
-    addRowDetail(){
-        this.Medications.push({
-                MedicationID:"",
-                MedicationName:"",
-                QuantityForMorning:"",
-                QuantityForAfternoon:"",
-                Unit:"",
-                Notes:"",
-                RouteOfAdministration:"",
-                Warnings:"",
-                ExpiryDate:"",
-                SideEffects:"",
-        })
-    },
-    removeDetail(item,index){
-        this.Medications.splice(index,1)
-    },
-    getComboboxPatient(){
-    debugger
-      var url="https://localhost:44371/api/FamilyMembers"
+
+    getComboboxPatient() {
+      var url = "https://localhost:44371/api/FamilyMembers";
       axios
         .get(`${url}`)
         .then((response) => {
@@ -345,21 +515,21 @@ export default {
         });
     },
     addRowDetail() {
-      this.listMedication.push({
-        MedicationID: "",
+      this.prescriptions.Medications.push({
+        MedicationID: "00000000-0000-0000-0000-000000000000",
         MedicationName: "",
-        QuantityForMorning: "",
-        QuantityForAfternoon: "",
+        QuantityForMorning: 0,
+        QuantityForAfternoon: 0,
         Unit: "",
         Notes: "",
         RouteOfAdministration: "",
         Warnings: "",
-        ExpiryDate: "",
+        ExpiryDate: null,
         SideEffects: "",
       });
     },
     removeDetail(item, index) {
-      this.listMedication.splice(index, 1);
+      this.prescriptions.Medications.splice(index, 1);
     },
 
     /**
@@ -385,9 +555,6 @@ export default {
           isValidAll = isValid;
         }
       }
-      if (!isValidAll) {
-        this.focusToInputError();
-      }
 
       return isValidAll;
     },
@@ -410,7 +577,6 @@ export default {
      * AUTHOR: HTTHOA(9.12.2023)
      */
     validate(propName) {
-      debugger;
       // sau 0.2s thì validate để cập nhật dữ liệu trước khi validate
       setTimeout(() => {
         let isValid = true; //  biến lưu giá trị validate sau mỗi vòng for
@@ -445,7 +611,7 @@ export default {
 <style scope>
 .form-add .form-prescription {
   margin: 0px;
-  width: 1000px;
+  width: 1360px;
   height: auto;
   max-height: 768px;
   background-color: #fff;
@@ -467,7 +633,7 @@ export default {
 }
 .table-detail {
   max-height: 400px;
-  min-height: 150px;
+  min-height: 180px;
   max-width: 100%;
   overflow: auto;
 }
