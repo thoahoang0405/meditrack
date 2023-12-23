@@ -25,7 +25,7 @@
       <div class="btn-right" style="display: flex">
         <div class="btn-upload mr-2" style="display: flex; cursor: pointer">
           <div class="icon icon-upload mr-1"></div>
-          <div class="mr-2 mt-1" style="color: #22c3e6; font-weight: bold">
+          <div class="mr-2 mt-1" style="color: #22c3e6; font-weight: bold" @click="showFormFile">
             Thêm file hồ sơ
           </div>
         </div>
@@ -312,6 +312,7 @@
       @hidePopup="isShowPopup = false"
       @isDelete="deleteRecord()"
     ></Popup>
+    <form-up-load-img  v-if="isShowEditUpLoad" @closeFormFile = "closeFormFile" />
   </div>
 </template>
 
@@ -323,13 +324,15 @@ import { TableRecord } from "../../../js/common/table";
 import FormEdit from './RecordEdit.vue'
 import axios from "axios";
 import Popup from "../../base/BasePopup.vue";
+import FormUpLoadImg from './FormUpLoadImg.vue';
 
 export default {
   components: {
     Paginate,
     Form,
     FormEdit,
-    Popup
+    Popup,
+    FormUpLoadImg
   },
   name: "Record-page",
   props: {
@@ -337,6 +340,7 @@ export default {
   },
   data() {
     return {
+      isShowEditUpLoad:false,
       recordIdDelete:'',
       msgError:'Bạn có chắc chắn xoá Hồ sơ này không?',
       isShowPopup:false,
@@ -392,7 +396,12 @@ export default {
     
   },
   methods: {
-   
+    closeFormFile(){
+      this.isShowEditUpLoad = false;
+    },
+    showFormFile(){
+      this.isShowEditUpLoad = true;
+    },
     deleteRecords(val) {
       this.isShowPopup = !this.isShowPopup;
       this.recordIdDelete=val
