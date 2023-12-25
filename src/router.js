@@ -7,6 +7,8 @@ import Login from "../src/components/page/Login.vue"
 import Record from "../src/components/page/record/Record.vue"
 import Account from "../src/components/page/account/AccountManagement.vue"
 import Family from "./components/page/familyMember/FamilyMembers.vue"
+import axios from "axios";
+
 const routes =  [
       {
         path: '/',
@@ -67,7 +69,19 @@ const routes =  [
     
 ];
 const router = createRouter({
-    history: createWebHistory(),
-    routes,
-  });
+  history: createWebHistory(),
+  routes,
+});
+// router.beforeEach(async (to) => {
+//   if (to.fullPath == "/login") return true;
+
+//   const response = await axios({
+//     url: "https://localhost:44371/api/Users/user",
+//     method: "Get",
+//   }).catch(() => {
+//     return null;
+//   });
+
+//   if (!response) return "/login";
+// });
   export default router;

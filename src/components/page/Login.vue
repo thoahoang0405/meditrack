@@ -15,7 +15,7 @@
               type="text"
               class="mt-1"
               name="username"
-              v-model="form.username"
+              v-model="form.UserName"
             />
           </div>
           <div>
@@ -24,7 +24,7 @@
               type="password"
               class="mt-1"
               name="password"
-              v-model="form.password"
+              v-model="form.Password"
             />
           </div>
           <button class="btn button-blue submit" type="submit">
@@ -48,14 +48,18 @@
 </template>
 <script>
 import { mapActions } from "vuex";
+import axios from "axios";
+
 export default {
   name: "login-app",
   components: {},
   data() {
     return {
       form: {
-        username: "",
-        password: "",
+        UserID: "00000000-0000-0000-0000-000000000000",
+        PhoneNumber: "",
+        UserName: "",
+        Password: "",
       },
       showError: false,
     };
@@ -66,26 +70,19 @@ export default {
       this.$router.push("/register");
     },
     async submit() {
-      const User = new FormData();
-      User.append("username", this.form.username);
-      User.append("password", this.form.password);
-      if (User.get("username") == "htthoa") {
+      const response = await axios({
+        url: "https://localhost:44371/api/Users/sign-in",
+        method: "Post",
+        data: this.form
+      }).then(res=>{
+        if(res){
         this.$router.push("/home/appointment");
-        this.showError = false;
-      } else {
-        this.showError = true;
       }
-      // try {
-      //     await this.LogIn(User);
-      //     // this.$router.push("/posts");
-      //     return User={
-      //         username:"htthoa",
-      //         password:'1234'
-      //     }
-      //     this.showError = false
-      // } catch (error) {
-      //   this.showError = false
-      // }
+      })
+      .catch(() => {
+        this.showError = true;
+      });
+      
     },
   },
 };
