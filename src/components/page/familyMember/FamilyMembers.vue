@@ -5,14 +5,20 @@
         <h2 class="mr-2 mb-2">Người thân gia đình</h2>
       </div>
     </div>
-    <div class="nav mt-2">
+    <div class="nav">
       <button class="btn button-blue" @click="showForm()">
         + Thêm thành viên
       </button>
     </div>
 
     <div class="main">
-      <div class="list-app ">
+      <div class="noData" v-if="listFamily.length == 0">
+        <div class="no-data">
+          <div class="icon-noData"></div>
+          <h3>Không có dữ liệu</h3>
+        </div>
+      </div>
+      <div class="list-app">
         <div
           class="item-app mr-2 mr-1 mt-2"
           v-for="(item, index) in listFamily"
@@ -20,7 +26,7 @@
         >
           <div class="title-item">{{ item.PatientName }}</div>
           <div class="main-item">
-            <div class="avatar clr-warning">NA</div>
+            <!-- <div class="avatar clr-warning">NA</div> -->
             <div>
               <div class="content mt-2">
                 <div class="title">Mối quan hệ:</div>
@@ -30,16 +36,28 @@
                 <div class="title">Số điện thoại:</div>
                 <span>{{ item.PhoneNumber }}</span>
               </div>
+              <div class="content mt-1">
+                <div class="title">Liên hệ:</div>
+                <span>{{ item.Contact }}</span>
+              </div>
             </div>
           </div>
           <div class="footer-item">
-            <button class="btn delete-btn" @click="deleted(item.PatientID)">Xoá</button>
+            <button class="btn delete-btn" @click="deleted(item.PatientID)">
+              Xoá
+            </button>
             <button class="btn update-btn" @click="edit(item)">Cập nhật</button>
           </div>
         </div>
       </div>
     </div>
-    <Form v-if="isShowForm == true" :data="dataEdit" @closeForm="isShowForm=false" :formTitle="formTitle" :formMode="formMode"></Form>
+    <Form
+      v-if="isShowForm == true"
+      :data="dataEdit"
+      @closeForm="isShowForm = false"
+      :formTitle="formTitle"
+      :formMode="formMode"
+    ></Form>
     <Popup
       v-if="isShowPopup"
       :msg="msgError"
@@ -48,7 +66,7 @@
       @hidePopup="isShowPopup = false"
       @isDelete="deleteFamily()"
     ></Popup>
- </div>
+  </div>
 </template>
 <script>
 import Form from "./FamilyMemberForm.vue";
@@ -58,18 +76,19 @@ export default {
   name: "Family-page",
   components: {
     Form,
-    Popup
+    Popup,
   },
 
   data() {
     return {
-      isShowPopup:false,
-      msgError:"Bạn có chắc chắn xoá thành viên này không?",
-      formMode:1,
-      formTitle:'Thêm thành viên',
-      btnName:'',
+      id: localStorage.getItem("data"),
+      isShowPopup: false,
+      msgError: "Bạn có chắc chắn xoá thành viên này không?",
+      formMode: 1,
+      formTitle: "Thêm thành viên",
+      btnName: "",
       isShowForm: false,
-      dataEdit:{},
+      dataEdit: {},
       listFamily: [
         {
           FullName: "Hoàng Văn A",
@@ -82,54 +101,52 @@ export default {
           PhoneNumber: "08743834834",
         },
       ],
-      familyID:''
+      familyID: "",
     };
   },
   created() {
-    this.getFamily()
+    this.getFamily();
   },
   mounted() {
     this.emitter.on("loadDataFamily", () => {
       this.getFamily();
     });
-    
   },
   methods: {
     deleted(val) {
       this.isShowPopup = !this.isShowPopup;
-      this.familyID=val
+      this.familyID = val;
     },
-    deleteFamily(){
-      
+    deleteFamily() {
       this.isShowPopup = !this.isShowPopup;
-     var url="https://localhost:44371/api/FamilyMembers" 
-     axios
+      var url = "https://localhost:44371/api/FamilyMembers";
+      axios
         .delete(`${url}/${this.familyID}`)
         .then((response) => {
           this.getFamily();
           this.$toast.open({
-          message: 'Xoá thành viên thành công.',
-          type: 'success',
-          position:'top'
-      });
+            message: "Xoá thành viên thành công.",
+            type: "success",
+            position: "top",
+          });
         })
         .catch((err) => {
           console.log(err);
         });
- 
     },
-    edit(item){
-      this.dataEdit=item
+    edit(item) {
+      this.dataEdit = item;
       this.isShowForm = !this.isShowForm;
-      this.formTitle="Sửa thông tin thành viên"
-      this.formMode=2
+      this.formTitle = "Sửa thông tin thành viên";
+      this.formMode = 2;
     },
     getFamily() {
-      var url = "https://localhost:44371/api/FamilyMembers";
+      var me = this;
+      me.listFamily = [];
       axios
-        .get(`${url}`)
+        .get(`https://localhost:44371/api/FamilyMembers/id?id=${this.id}`)
         .then((response) => {
-          this.listFamily = response.data;
+          me.listFamily = response.data;
         })
         .catch((err) => {
           console.log(err);
@@ -137,12 +154,11 @@ export default {
     },
     showForm() {
       this.isShowForm = !this.isShowForm;
-      this.formTitle="Thêm thành viên"
-      this.formMode=1
+      this.formTitle = "Thêm thành viên";
+      this.formMode = 1;
     },
-    
   },
-}
+};
 </script>
 <style scoped>
 .family .main-item {
@@ -166,4 +182,3 @@ export default {
 }
 @import url(./FamilyMember.scss);
 </style>
-

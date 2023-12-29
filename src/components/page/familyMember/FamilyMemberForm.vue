@@ -90,11 +90,12 @@ export default {
   },
   data() {
     return {
+      id : localStorage.getItem("data"),
       appointment: {},
       isShowStepTwo: false,
       family: {
         PatientID: "00000000-0000-0000-0000-000000000000",
-        UserID: "443f7b5d-99c2-11ee-bfeb-1866da3df2b8",
+        UserID: localStorage.getItem("data"),
         PatientName: "",
         DateOfBirth: null,
         Relationship: "",
@@ -135,7 +136,6 @@ export default {
     save() {
       var me = this;
       var url = "https://localhost:44371/api/FamilyMembers";
-debugger
       //validate
       // if (this.validateAll()) {
         if (me.editMode == 1) {

@@ -1,85 +1,68 @@
 <template>
-  <div class="form-add">
-    <div class="form">
-      <div class="form-header">
-        <div>Thêm File Hồ sơ</div>
-        <div class="icon icon-close" @click="closeFormST1"></div>
+  <div class="form-upload-f">
+    <div class="form-upload">
+      <div class="form-header mt-1" style="display: flex; justify-content: space-between;">
+        <div class="fileName">{{  fileData.name}}</div>
+        <div class="icon icon-close-white " @click="closeFormST1"></div>
       </div>
-
-      <div class="form-main">
-        <label class="filelabel">
-          <FontAwesomeIcon icon="fa-solid fa-paperclip" />
-          <span class="title"> Thêm file</span>
-          <input
-            @change="onFileChange($event)"
-            class="FileUpload1"
-            id="FileInput"           
-            name="booking_attachment"
-            type="file"
-            accept="image/*"
-          />
-        </label>
-        <img :src=url width="800" height="350">
-      </div>
-      <div class="form-footer mt-2">
-        <button class="btn button-blue" @click="save()">Lưu</button>
-        <button class="btn button-blue-outline mr-2" @click="closeFormST1()">
-          Huỷ
-        </button>
-      </div>
+          <div class="fileName" style="font-weight: bold;">{{ name }}</div>
+          <img :src="fileData.url" />
     </div>
   </div>
 </template>
-  <script>
-  import { storage } from '@/js/firebase/firebase';
-  import {ref,uploadBytes , getDownloadURL} from 'firebase/storage'
+<script>
+import { storage } from "@/js/firebase/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 export default {
+  props:["url"],
   data() {
-      return {
-        fileData:null,
-        url:"https://firebasestorage.googleapis.com/v0/b/meditrackcr.appspot.com/o/placeholder.png?alt=media&token=07460e40-90da-4952-835f-b09f275b2af8",
-        
-      }
-    },
+    return {
+      fileData: {},
+      urlImage: "https://firebasestorage.googleapis.com/v0/b/meditrackcr.appspot.com/o/placeholder.png?alt=media&token=07460e40-90da-4952-835f-b09f275b2af8",
+      name: null,
+    };
+  },
+  created() {
+    this.fileData= this.url
+  },
   methods: {
     closeFormST1() {
       this.$emit("closeFormFile", false);
     },
-    
+
     // lưu lên và hiển thị khi đổi chọn ảnh
     onFileChange(e) {
-     var files = e.target.files || e.dataTransfer.files;
-       if (!files.length)
-       {
+      debugger
+      var files = e.target.files || e.dataTransfer.files;
+      if (!files.length) {
         this.fileData = null;
-         return;
-       }       
-       this.fileData = files[0];
-       const storageRef = ref(storage,this.fileData.name)
-       // Hàm update file lên theo tên file
-      uploadBytes(storageRef,this.fileData).then(
-        (res)=>{
-          console.log(res);
-          //Hàm get file vể và hiển thị theo tên file
-          getDownloadURL(ref(storage,this.fileData.name)).then(
-            // get url gán vào src ảnh là được
-            (urldownLoad)=>(this.url =urldownLoad )
-          )
-        }
-      )
-
-},
+        return;
+      }
+      this.fileData = files[0];
+      const storageRef = ref(storage, this.fileData.name);
+      // Hàm update file lên theo tên file
+      uploadBytes(storageRef, this.fileData).then((res) => {
+        console.log(res);
+        //Hàm get file vể và hiển thị theo tên file
+        getDownloadURL(ref(storage, this.fileData.name)).then(
+          // get url gán vào src ảnh là được
+          (urldownLoad) => (this.url = urldownLoad)
+        );
+      });
+      this.name = this.fileData.name;
+    },
     // khi lưu thì gọn đến hà uploadBytes ở trên và chỉ cần lưu tên của file vào database thôi nhé (this.fileData.name)
     // lúc lấy đển hiển thị ra thi dùng hàn getDownloadURL theo tên của file lưu ở database cho từ đối tương.
-    save(){
+    save() {
       //todo lưu xuống database
-    }
+      console.log(this.fileData);
+    },
   },
 };
 </script>
-  <style scope>
-.form-add {
-  background-color: rgba(0, 0, 0, 0.5);
+<style scope>
+.form-upload-f {
+  background-color: transparent  !important;;
   position: absolute;
   width: 100%;
   height: 100vh;
@@ -87,13 +70,22 @@ export default {
   justify-content: center;
   padding: 0;
   align-items: center;
+  top: 0;
+  left: 0;
+  z-index: 20;
+  margin: 0;
+  flex-direction: column;
 }
-.form-add .form {
-  margin: 0px;
-  width: 800px;
-  height: 500px;
-  background-color: #fff;
+.form-upload-f .form-upload {
+  margin: 0;
+  max-width:100%;
+  max-height:100vh;
   padding: 20px;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.form-upload img{
+  max-width: 100%;
+  max-height: 900px;
 }
 .form .form-main {
   height: 400px;
@@ -105,35 +97,21 @@ export default {
   font-weight: bold;
 }
 .filelabel {
-    width: 120px;
-    border: 2px dashed grey;
-    border-radius: 5px;
-    display: block;
-    padding: 5px;
-    transition: border 300ms ease;
-    cursor: pointer;
-    text-align: center;
-    margin: 0;
-}
-.filelabel i {
-    display: block;
-    font-size: 30px;
-    padding-bottom: 5px;
-}
-.filelabel i,
-.filelabel .title {
+  width: 120px;
+  border-radius: 5px;
+  display: block;
+  padding: 5px;
+  transition: border 300ms ease;
+  cursor: pointer;
+  text-align: center;
+  margin: 0;
+  display: flex;
   color: grey;
-  transition: 200ms color;
+  margin-top:10px
 }
-.filelabel:hover {
-  border: 2px solid #1665c4;
-}
-.filelabel:hover i,
-.filelabel:hover .title {
-  color: #1665c4;
-}
-#FileInput{
-    display:none;
+
+
+#FileInput {
+  display: none;
 }
 </style>
-  

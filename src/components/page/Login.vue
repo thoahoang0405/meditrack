@@ -70,12 +70,16 @@ export default {
       this.$router.push("/register");
     },
     async submit() {
+      debugger
       const response = await axios({
         url: "https://localhost:44371/api/Users/sign-in",
         method: "Post",
         data: this.form
       }).then(res=>{
         if(res){
+          localStorage.setItem("Token", res.data);
+          axios.defaults.headers.common["Authorization"] =
+        "Bearer " + localStorage.getItem("Token");
         this.$router.push("/home/appointment");
       }
       })

@@ -17,18 +17,15 @@
           type="text"
           placeholder="Nhập tên cuộc hẹn để tìm kiếm"
           class="input-seach"
+          v-model="txtSearch"
+          @keypress.enter="onClickSearch()"
         />
         <div class="icon-s">
           <span class="icon icon-search-black"></span>
         </div>
       </div>
       <div class="btn-right" style="display: flex">
-        <div class="btn-upload mr-2" style="display: flex; cursor: pointer">
-          <div class="icon icon-upload mr-1"></div>
-          <div class="mr-2 mt-1" style="color: #22c3e6; font-weight: bold" @click="showFormFile">
-            Thêm file hồ sơ
-          </div>
-        </div>
+       
         <button class="btn button-blue" @click="showAdd()">+ Thêm hồ sơ</button>
       </div>
     </div>
@@ -49,7 +46,11 @@
                 <th>Họ và tên</th>
                 <th>Bác sĩ khám</th>
                 <th>Địa chỉ khám</th>
-                <th><div class="text-center">Ngày sinh</div></th>
+                <th><div  style="
+                    min-width: 100px;
+                    
+                    box-sizing: border-box;
+                  "  class="text-center">Ngày sinh</div></th>
 
                 <th>Địa chỉ</th>
                 <th class="text-center">Số điện thoại</th>
@@ -113,8 +114,7 @@
                 </td>
                 <td
                   style="
-                    min-width: 150px;
-                    max-width: auto;
+                   width: 150px;
                     box-sizing: border-box;
                   "
                   class="text-center"
@@ -204,12 +204,9 @@
                   colspan="1"
                   style="min-width: 90px; box-sizing: border-box"
                 ></td>
+              
                 <td
-                  colspan="1"
-                  style="min-width: 90px; box-sizing: border-box"
-                ></td>
-                <td
-                  colspan="1"
+                  colspan="2"
                   style="
                     min-width: 130px;
                     max-width: 130px;
@@ -237,14 +234,7 @@
                     </div>
                     <div class="dropup-page">
                       <div class="item-up" v-show="isShowPage">
-                        <div
-                          class="item-dropup"
-                          :class="{ act: isActive == '10' }"
-                          pageSize="10"
-                          @click="getPageDefault"
-                        >
-                          10 bản ghi trên trang
-                        </div>
+                        
                         <div
                           class="item-dropup"
                           :class="{ act: isActive == '20' }"
@@ -270,18 +260,12 @@
                         >
                           50 bản ghi trên trang
                         </div>
-                        <div
-                          class="item-dropup"
-                          :class="{ act: isActive == '100' }"
-                          pageSize="100"
-                          @click="getPageDefault"
-                        >
-                          100 bản ghi trên trang
-                        </div>
+                        
                       </div>
                     </div>
                   </div>
                 </td>
+               
                 <td
                   colspan="1"
                   style="min-width: 90px; box-sizing: border-box"
@@ -340,6 +324,7 @@ export default {
   },
   data() {
     return {
+      id: localStorage.getItem("data"),
       isShowEditUpLoad:false,
       recordIdDelete:'',
       msgError:'Bạn có chắc chắn xoá Hồ sơ này không?',
@@ -566,12 +551,12 @@ export default {
      */
 
     getRecords() {
-      debugger;
+      
       var me = this;
       me.isShowLoad = true;
       var url = "https://localhost:44371/api/Records/Filter";
       axios({
-        url: `${url}?keyword=${this.txtSearch}&pageSize=${this.pageDefault}&pageNumber=${this.pageNumber}`,
+        url: `${url}?keyword=${this.txtSearch}&pageSize=${this.pageDefault}&pageNumber=${this.pageNumber}&id=${this.id}`,
         method: "post",
         data: [],
       })
@@ -690,16 +675,16 @@ tr .data:hover {
 }
 
 .item-dropup {
-  padding: 10px;
+  padding: 7px;
 }
 
 .item-up {
   position: absolute;
   background-color: #fff;
   margin-left: -1px;
-  margin-top: -208px;
+  margin-top: -119px;
   width: 180px;
-  z-index: 10;
+  z-index: 111;
   border: 1px solid #bbb;
 }
 
@@ -707,7 +692,7 @@ tr .data:hover {
   position: absolute;
   background-color: #fff;
   margin-left: -2px;
-  margin-top: -208px;
+  margin-top: -119px;
 
   z-index: 10;
   border: 1px solid #bbb;

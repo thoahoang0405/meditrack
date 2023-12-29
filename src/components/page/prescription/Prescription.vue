@@ -46,7 +46,11 @@
                 <th>{{ tableInfo.Diagnose }}</th>
 
                 <th>
-                  <div class="text-center">
+                  <div  style="
+                    min-width: 100px;
+                    
+                    box-sizing: border-box;
+                  " class="text-center">
                     {{ tableInfo.FromDate }}
                   </div>
                 </th>
@@ -241,18 +245,7 @@
                   colspan="1"
                   style="min-width: 90px; box-sizing: border-box"
                 ></td>
-                <td
-                  colspan="1"
-                  style="min-width: 90px; box-sizing: border-box"
-                ></td>
-                <td
-                  colspan="1"
-                  style="
-                    min-width: 130px;
-                    max-width: 130px;
-                    box-sizing: border-box;
-                  "
-                >
+                
                   <div class="page">
                     <div
                       style="position: relative; cursor: pointer"
@@ -274,14 +267,7 @@
                     </div>
                     <div class="dropup-page">
                       <div class="item-up" v-show="isShowPage">
-                        <div
-                          class="item-dropup"
-                          :class="{ act: isActive == '10' }"
-                          pageSize="10"
-                          @click="getPageDefault"
-                        >
-                          10 bản ghi trên trang
-                        </div>
+                       
                         <div
                           class="item-dropup"
                           :class="{ act: isActive == '20' }"
@@ -307,17 +293,18 @@
                         >
                           50 bản ghi trên trang
                         </div>
-                        <div
-                          class="item-dropup"
-                          :class="{ act: isActive == '100' }"
-                          pageSize="100"
-                          @click="getPageDefault"
-                        >
-                          100 bản ghi trên trang
-                        </div>
+                        
                       </div>
                     </div>
                   </div>
+                  <td
+                  colspan="1"
+                  style="
+                    min-width: 130px;
+                    max-width: 130px;
+                    box-sizing: border-box;
+                  "
+                >
                 </td>
                 <td
                   colspan="1"
@@ -375,7 +362,7 @@ export default {
       isShowForm: false,
       message: "",
       isShowContextMenu: false,
-
+      id:localStorage.getItem("data"),
       isShow: false,
 
       isShowPopup: false,
@@ -402,7 +389,6 @@ export default {
   watch: {
     /**
      * thep dõi biến search
-     * AUTHOR: HTTHOA(20/03/2023)
      */
     txtSearch: function () {
       if (this.txtSearch == "") {
@@ -623,7 +609,7 @@ export default {
       me.isShowLoad = true;
       var url = "https://localhost:44371/api/Prescriptions/Filter";
       axios({
-        url: `${url}?keyword=${this.txtSearch}&pageSize=${this.pageDefault}&pageNumber=${this.pageNumber}`,
+        url: `${url}?keyword=${this.txtSearch}&pageSize=${this.pageDefault}&pageNumber=${this.pageNumber}&id=${this.id}`,
         method: "post",
         data: [],
       })
@@ -755,6 +741,9 @@ tr .data:hover {
   margin: auto 48%;
   align-items: center;
 }
+td{
+  overflow: hidden; 
+}
 
 .act {
   background-color: green;
@@ -779,14 +768,14 @@ tr .data:hover {
 }
 
 .item-dropup {
-  padding: 10px;
+  padding: 7px;
 }
 
 .item-up {
   position: absolute;
   background-color: #fff;
   margin-left: -1px;
-  margin-top: -208px;
+  margin-top: -119px;
   width: 180px;
   z-index: 10;
   border: 1px solid #bbb;
@@ -796,7 +785,7 @@ tr .data:hover {
   position: absolute;
   background-color: #fff;
   margin-left: -2px;
-  margin-top: -208px;
+  margin-top: -119px;
 
   z-index: 10;
   border: 1px solid #bbb;

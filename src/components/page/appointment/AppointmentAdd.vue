@@ -25,7 +25,20 @@
           </div>
           <div class="gr-item w-50 ml-2 mr-2">
             <div class="label">Ngày dự kiến</div>
-            <input
+            <div class="mt-1 w-100">
+              <el-date-picker
+                type="date"
+                class=" w-100"
+                ref="AppointmentDate"
+                :class="error.AppointmentDate != '' ? 'border-error' : ''"
+                @blur="validate('AppointmentDate')"
+                v-model="appointments.AppointmentDate"
+                placeholder="DD/MM/YYYY"
+                format="DD/MM/YYYY"
+                value-format="YYYY-MM-DD"
+              />
+            </div>
+            <!-- <input
               class="mt-1 w-100"
               type="date"
               ref="AppointmentDate"
@@ -33,7 +46,7 @@
               @blur="validate('AppointmentDate')"
               @focus="$refs.AppointmentDate.select()"
               v-model="appointments.AppointmentDate"
-            />
+            /> -->
             <p class="error" v-if="error.AppointmentDate != ''">
               {{ error.AppointmentDate }}
             </p>
@@ -146,14 +159,17 @@
 </template>
 <script>
 import Combobox from "../../base/BaseCombobox.vue";
+import { ElDatePicker } from "element-plus";
 import axios from "axios";
 export default {
   props: ["data", "formMode"],
   components: {
     Combobox,
+    ElDatePicker,
   },
   data() {
     return {
+      id: localStorage.getItem("data"),
       editMode: 1,
       appointments: {
         AppointmentID: "00000000-0000-0000-0000-000000000000",
@@ -168,7 +184,21 @@ export default {
         Description: "",
         PatientName: "",
         PatientID: null,
+        Notice: [
+          {
+            NoticeID: "",
+            UserID: localStorage.getItem("data"),
+            NoticeName: "",
+            ToDate: null,
+            ToDate: null,
+            NoticeStatus: 1,
+            NoticeType: 1,
+            NoticeOfUser: "",
+            TypeID: "00000000-0000-0000-0000-000000000000",
+          },
+        ],
       },
+
       PatientName: "",
       PatientID: "",
       patients: [
@@ -206,7 +236,7 @@ export default {
     } else {
       this.appointments = {
         AppointmentID: "00000000-0000-0000-0000-000000000000",
-        UseID: "443f7b5d-99c2-11ee-bfeb-1866da3df2b8",
+        UserID: localStorage.getItem("data"),
         AppointmentName: "",
         AppointmentDate: null,
         PatientName: "",
@@ -231,7 +261,7 @@ export default {
     getComboboxPatient() {
       var url = "https://localhost:44371/api/FamilyMembers";
       axios
-        .get(`${url}`)
+        .get(`https://localhost:44371/api/FamilyMembers/id?id=${this.id}`)
         .then((response) => {
           this.patients = response.data;
         })
@@ -251,15 +281,33 @@ export default {
     save() {
       var me = this;
       //validate
+      me.appointments.Notice = [
+        {
+          NoticeID: "00000000-0000-0000-0000-000000000000",
+          UserID: localStorage.getItem("data"),
+          NoticeName: me.appointments.AppointmentName,
+          NoticeDate: me.appointments.AppointmentDate,
+          ToDate: me.appointments.AppointmentDate,
+          NoticeStatus: 1,
+          NoticeType: "Cuộc hẹn ",
+          NoticeOfUser:
+            me.appointments.PatientName &&
+            (me.appointments.PatientName != null ||
+              me.appointments.PatientName != "")
+              ? me.appointments.PatientName
+              : "Bạn",
+          TypeID: "00000000-0000-0000-0000-000000000000",
+        },
+      ];
       if (this.validateAll()) {
         if (me.editMode == 1) {
-          var url = "https://localhost:44371/api/Appoinments";
+          var url = "https://localhost:44371/api/Appoinments/user";
           axios({
             url: `${url}`,
             method: "post",
             data: me.appointments,
           })
-            .then(function (res) {
+            .then(async function (res) {
               me.$emit("closeForm", false);
               me.emitter.emit("loadData");
               me.$toast.open({
@@ -272,13 +320,13 @@ export default {
               console.log(res);
             });
         } else {
-          var url = "https://localhost:44371/api/Appoinments";
+          var url = "https://localhost:44371/api/Appoinments/user";
           axios({
             url: `${url}/${me.appointments.AppointmentID}`,
             method: "put",
             data: me.appointments,
           })
-            .then(function (res) {
+            .then(async function (res) {
               me.$emit("closeForm", false);
               me.emitter.emit("loadData");
               me.$toast.open({
@@ -292,6 +340,20 @@ export default {
             });
         }
       }
+    },
+    async addNotice(arr) {
+      var url = "";
+      await axios({
+        url: `https://localhost:44371/api/Notifications`,
+        method: "post",
+        data: arr,
+      })
+        .then(function (res) {
+          return res;
+        })
+        .catch(function (res) {
+          return res;
+        });
     },
 
     closeForm() {
@@ -345,7 +407,6 @@ export default {
      * AUTHOR: HTTHOA(9.12.2023)
      */
     validate(propName) {
-      debugger;
       // sau 0.2s thì validate để cập nhật dữ liệu trước khi validate
       setTimeout(() => {
         let isValid = true; //  biến lưu giá trị validate sau mỗi vòng for

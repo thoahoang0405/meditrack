@@ -175,10 +175,27 @@
 	width: 12px;
 	height: 7px;
 }
+.icon-close-file {
+  background: url("../../assets/icon/All-icon.svg") no-repeat -950px -290px;
+	width: 12px;
+	height: 13px;
+  margin-top: 4px;
+	
+}
 .icon-down-black {
   background: url("../../assets/icon/qlts-icon.svg") no-repeat -158px -249px;
   width: 12px;
   height: 7px;
+}
+.icon-close-white {
+  background: url("../../assets/icon/Sprites.64af8f61.svg") no-repeat -930px -147px;
+  width: 19px;
+	height: 18px;
+}
+.icon-attach {
+  background: url("../../assets/icon/Sprites.64af8f61.svg") no-repeat -539px -202px;
+  width: 19px;
+	height: 19px;
 }
 
 .icon-up-bold {
@@ -467,5 +484,10 @@ input[type="radio"]:checked::before {
 .icon-upload{
   background: url('../../assets/icon/icons8-upload-file-24.png') no-repeat ;
 	
+}
+.icon-userFamily{
+  background: url('../../assets/icon/Sprites.64af8f61.svg') no-repeat -876px -202px;
+	width: 16px;
+	height: 20px;
 }
 

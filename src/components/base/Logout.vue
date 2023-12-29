@@ -1,6 +1,6 @@
 <template>
     <div class="logout-nav">
-        <div class="logout-item mt-2">
+        <div class="logout-item mt-1">
             <div class="item-n" >
                 <button class="name " @click="showUserDetail">Hoàng Thị Thoả</button>
                 <button class="btn-logout item" @click="logout"><div class="icon icon-logout mr-2"></div>  <p class="">Đăng xuất</p></button>
@@ -17,6 +17,10 @@ export default {
     methods:{
         logout(){
             this.$router.push("/login");
+            localStorage.removeItem("data")
+            localStorage.removeItem("Token")
+            localStorage.removeItem("name")
+            localStorage.removeItem("pass")
         },
         showUserDetail(){
             this.$router.push("/home/account")
@@ -27,7 +31,7 @@ export default {
 <style scope>
 .logout-nav{
     width: 150px;
-   height: 80px;
+   height: 90px;
     overflow-y: auto;
     position: absolute;
     z-index: 100;

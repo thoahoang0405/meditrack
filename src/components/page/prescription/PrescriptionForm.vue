@@ -354,11 +354,12 @@ export default {
   },
   data() {
     return {
+      id : localStorage.getItem("data"),
       isShowPopup: false,
       editMode: 1,
       isShowDetail: true,
       prescriptions: {
-        UserID: "443f7b5d-99c2-11ee-bfeb-1866da3df2b8",
+        UserID: localStorage.getItem("data"),
         PrescriptionsID: "00000000-0000-0000-0000-000000000000",
         PrescriptionStatus:1,
         Medications: [
@@ -375,6 +376,9 @@ export default {
             SideEffects: "",
           },
         ],
+        Notice:[
+          
+        ]
       },
       msgError: "",
       PatientName: "",
@@ -414,7 +418,7 @@ export default {
       this.prescriptions = this.data;
     } else {
       this.prescriptions = {
-        UserID: "443f7b5d-99c2-11ee-bfeb-1866da3df2b8",
+        UserID: localStorage.getItem("data"),
         PrescriptionsID: "00000000-0000-0000-0000-000000000000",
         Medications: [
           {
@@ -436,7 +440,7 @@ export default {
   methods: {
     save() {
       var me = this;
-      console.log(this.prescriptions);
+    
       if (
         !this.prescriptions.Medications ||
         this.prescriptions.Medications.length <= 0 ||
@@ -446,8 +450,27 @@ export default {
         this.msgError = "Cần nhật ít nhất 1 loại thuốc sử dụng theo đơn thuốc.";
         this.isShowPopup = true;
       } else {
+        me.prescriptions.Notice=[{
+            NoticeID: "00000000-0000-0000-0000-000000000000",
+            UserID: localStorage.getItem("data"),
+            NoticeName: this.prescriptions.PrescriptionName,
+            NoticeDate: this.prescriptions.FromDate,
+            ToDate:  this.prescriptions.ToDate,
+            NoticeStatus: 1,
+            NoticeType: "Đơn thuốc ",
+            NoticeOfUser:
+              this.prescriptions.PatientName &&
+              (this.prescriptions.PatientName != null ||
+                this.prescriptions.PatientName != "")
+                ? this.prescriptions.PatientName
+                : "Bạn",
+            TypeID: "00000000-0000-0000-0000-000000000000",
+          
+      }]
         if (this.validateAll()) {
           if(me.editMode==1){
+           
+            me.prescriptions.PrescriptionStatus=1
             var url = "https://localhost:44371/api/Prescriptions/user";
           axios({
             url: `${url}`,
@@ -467,6 +490,7 @@ export default {
               console.log(res);
             });
           }else{
+           
             var url = "https://localhost:44371/api/Prescriptions/user";
           axios({
             url: `${url}`,
@@ -506,7 +530,7 @@ export default {
     getComboboxPatient() {
       var url = "https://localhost:44371/api/FamilyMembers";
       axios
-        .get(`${url}`)
+        .get(`${url}/id?id=${this.id}`)
         .then((response) => {
           this.patients = response.data;
         })

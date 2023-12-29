@@ -29,7 +29,13 @@
       </button>
     </div>
 
-    <div class="main">
+    <div class="main" >
+      <div  class="noData" v-if="patients.length==0">
+                  <div class="no-data">
+                    <div class="icon-noData"></div>
+                    <h3>Không có dữ liệu</h3>
+                  </div>
+                </div>
       <div style="height: calc(100% - 80px)">
         <div
           class="group-patient mt-2"
@@ -37,7 +43,7 @@
           :key="index"
         >
           <div class="title-gr" v-if="user != 1">
-            <div class="icon icon-down-blue mr-2 mt-1"></div>
+            <div class="icon icon-userFamily mr-2 mt-1"></div>
             <div class="name-patient mt-1">{{ patient.PatientName }}</div>
           </div>
           <div class="list-app">
@@ -88,12 +94,12 @@
           </div>
         </div>
       </div>
-      <div class="notice mt-2 mr-2">
+      <!-- <div class="notice mt-2 mr-2" v-if="patients.length!=0">
         <div class="notice-content">
           <div class="icon notice-blue mr-1"></div>
           Bạn có 2 cuộc hẹn hôm nay
         </div>
-      </div>
+      </div> -->
     </div>
     <Form
       v-if="isShowForm"
@@ -134,6 +140,7 @@ export default {
   },
   data() {
     return {
+      id : localStorage.getItem("data"),
       keyword:'',
       formMode:1,
       btnName: "Có",
@@ -220,6 +227,7 @@ export default {
     };
   },
   created() {
+    debugger
     this.getAppointment();
     this.getComboboxPatient();
     
@@ -324,7 +332,7 @@ export default {
     getComboboxPatient() {
       var url = "https://localhost:44371/api/FamilyMembers";
       axios
-        .get(`${url}`)
+        .get(`${url}/id?id=${this.id}`)
         .then((response) => {
           this.listPatient = response.data;
         })
@@ -333,11 +341,10 @@ export default {
         });
     },
     getAppointment() {
-      debugger;
       var me = this;
-      var url ="https://localhost:44371/api/Appoinments/appointments?keyword=";
+      var url =`https://localhost:44371/api/Appoinments/appointments?keyword=${this.keyword}&id=${this.id}`;
       axios
-        .get(`${url}${this.keyword}`)
+        .get(`${url}`)
         .then(function (res) {
           if (res.data.length > 0) {
             me.listAppointment = res.data;

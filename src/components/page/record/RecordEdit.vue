@@ -3,7 +3,33 @@
     <div class="form">
       <div class="form-header">
         <div>Sửa hồ sơ</div>
+        <div style="display: flex">
+          <label class="btn-upload mr-2 mb-1" style="display: flex; cursor: pointer ; font-size: 14px;">
+            <div class="icon icon-upload mr-1"></div>
+            <div
+              class="mr-2 mt-1" 
+              style="color: #22c3e6; font-weight: bold"
+            >
+              Thêm đính kèm
+            </div>
+            <input
+              @change="onFileChange($event)"
+              class="FileUpload1"
+              id="FileInput"
+              name="booking_attachment"
+              type="file"
+              accept="image,.pps,.png, .zip, 
+              .jpg,
+              .txt,
+              application/pdf,
+              application/vnd.ms-powerpoint,
+              application/vnd.openxmlformats-officedocument.presentationml.slideshow,
+              application/vnd.openxmlformats-officedocument.presentationml.presentation"
+            />
+          </label>
+        
         <div class="icon icon-close" @click="closeFormST1"></div>
+        </div>
       </div>
       <div class="tab">
         <div v-for="item in listTab" :key="item.tabId">
@@ -349,6 +375,22 @@
             </div>
           </div>
         </div>
+           
+        <div class="urlList">
+
+<div class="listfile mt-2" v-for="(item,index) in listUrl" :key="index">
+  <div class="file" style="display: flex;"><div
+    class="fileName mr-1"
+    style="font-weight: bold"
+    @click="showFormFile(item)"
+  >
+    {{ item.name }}
+  </div>
+  <div class="icon icon-close-file " @click="removeUrl(index)"></div>
+</div>
+</div>
+
+</div>
       </div>
       <div class="form-footer mt-2">
         <button class="btn button-blue" @click="save()">Lưu</button>
@@ -358,21 +400,35 @@
       </div>
     </div>
   </div>
+  <form-up-load-img
+    v-if="isShowEditUpLoad"
+    @closeFormFile="closeFormFile"
+    :url="urlView"
+  />
 </template>
 <script>
 import Combobox from "../../base/BaseCombobox.vue";
-import StepTwo from "./MedicalTests.vue";
+import { storage } from "@/js/firebase/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import axios from "axios";
 import { ElDatePicker } from "element-plus";
+import FormUpLoadImg from "./FormUpLoadImg.vue";
 export default {
   props: ["data"],
   components: {
     Combobox,
-    StepTwo,
     ElDatePicker,
+    FormUpLoadImg,
   },
   data() {
     return {
+      fileData: null,
+      url: "",
+      listUrl:[],
+      name: null,
+      urlView:{},
+      id: localStorage.getItem("data"),
+      isShowEditUpLoad: false,
       showTabActive: 1,
       editMode: 1,
       isShowStep2: false,
@@ -395,8 +451,9 @@ export default {
         },
       ],
       records: {
+
         RecordID: "00000000-0000-0000-0000-000000000000",
-        UserID: "443f7b5d-99c2-11ee-bfeb-1866da3df2b8",
+        UserID: localStorage.getItem("data"),
         RecordTitle: "",
         RecordDate: "",
         MedicalExaminationAddress: "",
@@ -472,13 +529,47 @@ export default {
   },
   created() {
     this.records = this.data;
+    if(this.records.FileName!=""){
+      this.listUrl= JSON.parse(this.records.FileName)
+    }
     this.getComboboxPatient();
   },
   methods: {
+    removeUrl(index){
+      this.listUrl.splice(index,1)
+    },
+    onFileChange(e) {
+  
+      var files = e.target.files || e.dataTransfer.files;
+      if (!files.length) {
+        this.fileData = null;
+        return;
+      }
+      this.fileData = files[0];
+      const storageRef = ref(storage, this.fileData.name);
+      // Hàm update file lên theo tên file
+      uploadBytes(storageRef, this.fileData).then((res) => {
+        console.log(res);
+        //Hàm get file vể và hiển thị theo tên file
+        getDownloadURL(ref(storage, this.fileData.name)).then(
+          // get url gán vào src ảnh là được
+          (urldownLoad) => (this.url = urldownLoad, this.listUrl.push({name:this.fileData.name, url:this.url}))
+          
+        );
+      });
+      this.name = this.fileData.name;
+    },
+    closeFormFile() {
+      this.isShowEditUpLoad = false;
+    },
+    showFormFile(item) {
+      this.urlView=item
+      this.isShowEditUpLoad = true;
+    },
     getComboboxPatient() {
       var url = "https://localhost:44371/api/FamilyMembers";
       axios
-        .get(`${url}`)
+        .get(`${url}/id?id=${this.id}`)
         .then((response) => {
           this.patients = response.data;
         })
@@ -501,6 +592,10 @@ export default {
     save() {
       var me = this;
       if (me.validateAll()) {
+        if(me.listUrl && me.listUrl.length>0){
+        me.records.FileName= JSON.stringify(me.listUrl)
+      }
+      me.records.Gender= parseInt(me.records.Gender)
         var url = "https://localhost:44371/api/Records/records";
         axios({
           url: `${url}`,

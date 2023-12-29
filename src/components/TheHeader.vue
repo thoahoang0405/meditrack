@@ -3,13 +3,13 @@
     <P class="brand-text">MEDITRACK</P>
     <div class="right mr-2">
       <div class="notifi mr-2" @click="showListNotice">
-        <div class="noti"></div>
+        <div class="noti" v-if="count!=0"></div>
         <div class="icon mt-1 icon-noti"></div>
       </div>
-      <div class="avatar" @click="showLogout">{{ User }}</div>
+      <div class="avatar" @click="showLogout">{{ name }}</div>
     </div>
   </div>
-  <Notice v-if="isShowList == true"></Notice>
+  <Notice v-if="isShowList == true" ></Notice>
   <Logout v-if="isShowLogout == true"></Logout>
 </template>
 <style scoped>
@@ -19,6 +19,8 @@
 <script>
 import Notice from "./base/Notice.vue";
 import Logout from "./base/Logout.vue";
+import axios from "axios";
+
 export default {
   name: "Header-app",
   components: {
@@ -27,8 +29,10 @@ export default {
   },
   data() {
     return {
+      name: localStorage.getItem("name"),
       isShowList: false,
       isShowLogout: false,
+      count:0,
       form: {
         title: "",
         write_up: "",
@@ -48,13 +52,27 @@ export default {
       }
     },
   },
+  created(){
+    this.getpresDay()
+  },
   methods: {
+    
     showListNotice() {
       this.isShowList = !this.isShowList;
     },
     showLogout() {
       this.isShowLogout = !this.isShowLogout;
     },
+    getpresDay(){
+            axios
+        .get(`https://localhost:44371/api/Notifications/appointmentDay?id=${localStorage.getItem("data")}`)
+        .then((response) => {
+          this.count=response.data.filter(item=>item.NoticeStatus==1).length
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+        }
   },
 };
 </script>
