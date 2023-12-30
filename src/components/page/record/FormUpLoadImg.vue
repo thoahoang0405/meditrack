@@ -32,7 +32,6 @@ export default {
 
     // lưu lên và hiển thị khi đổi chọn ảnh
     onFileChange(e) {
-      debugger
       var files = e.target.files || e.dataTransfer.files;
       if (!files.length) {
         this.fileData = null;
@@ -81,7 +80,7 @@ export default {
   max-width:100%;
   max-height:100vh;
   padding: 20px;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: #000;
 }
 .form-upload img{
   max-width: 100%;

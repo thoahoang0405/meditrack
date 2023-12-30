@@ -415,6 +415,7 @@ export default {
     this.getComboboxPatient();
     this.editMode = this.formMode;
     if (this.editMode == 2) {
+      this.formTitle="Cập nhật đơn thuốc"
       this.prescriptions = this.data;
     } else {
       this.prescriptions = {

@@ -7,9 +7,11 @@
       <div class="popup-n-body">
         <div
           class="content-popup-n"
-          v-for="(item, index) in listDetail"
-          :key="index"
+       
         >
+        <div class="notice"    v-for="(item, index) in listDetail"
+          :key="index">
+
           <div class="item-notice" v-if="noticeOb.NoticeType == 'Đơn thuốc '">
             <p style="font-weight: bold">{{ item.MedicationName }} :</p>
             <p v-if="item.QuantityForMorning > 0">
@@ -20,6 +22,7 @@
             </p>
             <p>{{ item.RouteOfAdministration }}</p>
           </div>
+        </div>
           <div
             class="item-notice-app"
             v-if="noticeOb.NoticeType != 'Đơn thuốc '"
@@ -206,7 +209,8 @@ export default {
   justify-content: start;
   margin: 16px 16px 0px 16px;
 }
-.content-popup-n .item-notice {
+
+ .item-notice {
   display: flex;
 }
 </style>

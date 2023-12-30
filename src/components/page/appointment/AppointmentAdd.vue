@@ -233,6 +233,7 @@ export default {
     this.editMode = this.formMode;
     if (this.editMode == 2) {
       this.appointments = this.data;
+      this.formTitle="Cập nhật cuộc hẹn"
     } else {
       this.appointments = {
         AppointmentID: "00000000-0000-0000-0000-000000000000",

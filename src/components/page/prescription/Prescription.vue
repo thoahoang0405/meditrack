@@ -12,16 +12,30 @@
       </div>
     </div>
     <div class="nav mt-2">
-      <div class="search-fn">
-        <input
-          type="text"
-          placeholder="Nhập tên đơn thuốc để tìm kiếm"
-          class="input-seach"
-          v-model="txtSearch"
-          @keypress.enter="onClickSearch()"
-        />
-        <div class="icon-s">
-          <span class="icon icon-search-black"></span>
+      <div class="nav-left" style="display:flex;">
+
+        <div class="search-fn">
+          <input
+            type="text"
+            placeholder="Nhập tên đơn thuốc để tìm kiếm"
+            class="input-seach"
+            v-model="txtSearch"
+            @keypress.enter="onClickSearch()"
+          />
+          <div class="icon-s">
+            <span class="icon icon-search-black"></span>
+          </div>
+        </div>
+        <div class="w-100 ml-2">
+          <Combobox
+            class="item-input check-input"
+            :items="listStatus"
+            :fieldCode="'name'"
+            :fieldName="'name'"
+            v-model="statusName"
+            :placeholder="placeholderStatus"
+            @selectedItem="selectItemCbb"
+          />
         </div>
       </div>
       <button class="btn button-blue" @click="show()">+ Nhập đơn thuốc</button>
@@ -118,8 +132,8 @@
                 </td>
                 <td
                   style="
-                    min-width: 90px;
-                    max-width: 90px;
+                    min-width: 100px;
+                   
                     box-sizing: border-box;
                   "
                   :class="genderClass(asset.PrescriptionStatus)"
@@ -210,7 +224,7 @@
                 </td>
 
                 <td
-                  colspan="2"
+                  colspan="3"
                   style="
                     max-width: 280px !important;
                     min-width: 280px !important;
@@ -233,14 +247,7 @@
                   </div>
                 </td>
 
-                <td
-                  colspan="1"
-                  style="
-                    min-width: 90px;
-                    max-width: 90px;
-                    box-sizing: border-box;
-                  "
-                ></td>
+               
                 <td
                   colspan="1"
                   style="min-width: 90px; box-sizing: border-box"
@@ -346,17 +353,28 @@ import Form from "./PrescriptionForm.vue";
 import axios from "axios";
 import { FormDetailMode } from "../../../js/common/enumeration";
 import { TitlePopup } from "../../../js/common/resource";
+import Combobox from "../../base/BaseCombobox.vue";
+
 export default {
   name: "Prescription-page",
   components: {
     Paginate,
-    Form,
+    Form,Combobox
   },
   props: {
     msg: String,
   },
   data() {
     return {
+      placeholderStatus:"Lọc theo trạng thái",
+      listStatus: [
+        { id: 1, name: "Chưa sử dụng" },
+        { id: 2, name: "Đang sử dụng" },
+        { id: 3, name: "Đã hoàn thành" },
+        { id: 4, name: "Bỏ lỡ" },
+      ],
+      status:null,
+      statusName:'',
       formMode: 1,
       prescriptionEdit: {},
       isShowForm: false,
@@ -364,7 +382,6 @@ export default {
       isShowContextMenu: false,
       id:localStorage.getItem("data"),
       isShow: false,
-
       isShowPopup: false,
       isShowPage: false,
       tableInfo: Table,
@@ -387,6 +404,7 @@ export default {
     };
   },
   watch: {
+   
     /**
      * thep dõi biến search
      */
@@ -421,6 +439,16 @@ export default {
     });
   },
   methods: {
+    selectItemCbb(value) {
+      if (value) {
+        this.status = value.id;
+        this.statusName= value.name
+      } else {
+        this.status = null;
+        this.statusName=''
+      }
+      this.getPrescriptions()
+    },
     formatDate(date) {
       return MSFunction.formatDate(date);
     },
@@ -609,7 +637,7 @@ export default {
       me.isShowLoad = true;
       var url = "https://localhost:44371/api/Prescriptions/Filter";
       axios({
-        url: `${url}?keyword=${this.txtSearch}&pageSize=${this.pageDefault}&pageNumber=${this.pageNumber}&id=${this.id}`,
+        url: `${url}?keyword=${this.txtSearch}&pageSize=${this.pageDefault}&pageNumber=${this.pageNumber}&id=${this.id}&status=${this.status}`,
         method: "post",
         data: [],
       })

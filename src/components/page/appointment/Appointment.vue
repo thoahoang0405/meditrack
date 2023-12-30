@@ -6,36 +6,50 @@
         <div class="radio-user mb-1">
           <input class="mr-1" type="radio" value="1" v-model="user" />
           <label class="mr-2" for="1">Tôi</label>
-          <input class="mr-1" type="radio" value="2" v-model="user"  />
+          <input class="mr-1" type="radio" value="2" v-model="user" />
           <label for="2">Gia đình</label>
         </div>
       </div>
     </div>
     <div class="nav mt-2">
-      <div class="search-fn">
-        <input
-          type="text"
-          placeholder="Nhập tên cuộc hẹn để tìm kiếm"
-          class="input-seach"
-          v-model="keyword"
-          @keypress.enter="getAppointment()"
-        />
-        <div class="icon-s">
-          <span class="icon icon-search-black"></span>
+      <div class="nav-left" style="display: flex;">
+        <div class="search-fn">
+          <input
+            type="text"
+            placeholder="Nhập tên cuộc hẹn để tìm kiếm"
+            class="input-seach"
+            v-model="keyword"
+            @keypress.enter="getAppointment()"
+          />
+          <div class="icon-s">
+            <span class="icon icon-search-black"></span>
+          </div>
+        </div>
+        <div class="w-100 ml-2">
+          <Combobox
+            class="item-input check-input"
+            :items="listStatus"
+            :fieldCode="'name'"
+            :fieldName="'name'"
+            v-model="statusName"
+            :placeholder="placeholderStatus"
+            @selectedItem="selectItemCbb"
+          />
         </div>
       </div>
+
       <button class="btn button-blue" @click="showForm()">
         + Lên lịch cuộc hẹn
       </button>
     </div>
 
-    <div class="main" >
-      <div  class="noData" v-if="patients.length==0">
-                  <div class="no-data">
-                    <div class="icon-noData"></div>
-                    <h3>Không có dữ liệu</h3>
-                  </div>
-                </div>
+    <div class="main">
+      <div class="noData" v-if="patients.length == 0">
+        <div class="no-data">
+          <div class="icon-noData"></div>
+          <h3>Không có dữ liệu</h3>
+        </div>
+      </div>
       <div style="height: calc(100% - 80px)">
         <div
           class="group-patient mt-2"
@@ -83,7 +97,10 @@
                 </div>
               </div>
               <div class="footer-item">
-                <button class="btn delete-btn" @click="deleteAppointment(item.AppointmentID)">
+                <button
+                  class="btn delete-btn"
+                  @click="deleteAppointment(item.AppointmentID)"
+                >
                   Huỷ bỏ
                 </button>
                 <button class="btn update-btn" @click="showFormEdit(item)">
@@ -115,6 +132,7 @@
       @hidePopup="isShowPopup = false"
       @isDelete="deletedAppointment()"
     ></Popup>
+    <Loading v-if="loading==true"></Loading>
   </div>
 </template>
 
@@ -123,6 +141,8 @@ import Form from "./AppointmentAdd.vue";
 import Popup from "../../base/BasePopup.vue";
 import axios from "axios";
 import MSFunction from "../../../js/common/function";
+import Combobox from "../../base/BaseCombobox.vue";
+import Loading from "../../base/BaseLoading"
 export default {
   name: "Appointment-page",
   props: {
@@ -131,31 +151,40 @@ export default {
   components: {
     Form,
     Popup,
+    Combobox,
+    Loading
   },
   mounted() {
     this.emitter.on("loadData", () => {
       this.getAppointment();
     });
-    
   },
   data() {
     return {
-      id : localStorage.getItem("data"),
-      keyword:'',
-      formMode:1,
+      loading:false,
+      placeholderStatus:"Lọc theo trạng thái",
+      listStatus: [
+        { id: 1, name: "Mới tạo" },
+        { id: 2, name: "Sắp tới" },
+        { id: 3, name: "Đã hoàn thành" },
+        { id: 4, name: "Bỏ lỡ" },
+      ],
+      status:null,
+      statusName:'',
+      id: localStorage.getItem("data"),
+      keyword: "",
+      formMode: 1,
       btnName: "Có",
       msgError:
         "Bạn có chắc chắn muốn xoá <strong>cuộc hẹn</strong> này không?",
       isShowPopup: false,
       appointment: {},
       isShowForm: false,
-      
-        user: 1,
-        appointmentDeleted:null,
+
+      user: 1,
+      appointmentDeleted: null,
       listPatient: [],
-      patients: [
-      
-      ],
+      patients: [],
       listAppointment: [
         {
           AppointmentID: "111111",
@@ -227,71 +256,79 @@ export default {
     };
   },
   created() {
-    debugger
+    debugger;
     this.getAppointment();
     this.getComboboxPatient();
-    
   },
- 
+
   watch: {
-   
     user: function () {
       if (this.user == 1) {
-        this.getAppointment()
-      }else{
-        this.getAppointment()
+        this.getAppointment();
+      } else {
+        this.getAppointment();
       }
     },
-    keyword:function(){
-      if(this.keyword==''){
-        this.getAppointment()
+    keyword: function () {
+      if (this.keyword == "") {
+        this.getAppointment();
       }
-    }
-    
+    },
   },
   methods: {
+    selectItemCbb(value) {
+      if (value) {
+        this.status = value.id;
+        this.statusName= value.name
+      } else {
+        this.status = null;
+        this.statusName=''
+
+      }
+      this.getAppointment()
+    },
     formatDate(date) {
       return MSFunction.formatDate(date);
     },
-    deletedAppointment(){
-      
+    deletedAppointment() {
+      this.loading=true
       this.isShowPopup = !this.isShowPopup;
-     var url="https://localhost:44371/api/Appoinments" 
-     axios
+      var url = "https://localhost:44371/api/Appoinments";
+      axios
         .delete(`${url}/${this.appointmentDeleted}`)
         .then((response) => {
+
           this.getAppointment();
           this.$toast.open({
-          message: 'Huỷ bỏ cuộc hẹn thành công.',
-          type: 'success',
-          position:'top'
-      });
+            message: "Huỷ bỏ cuộc hẹn thành công.",
+            type: "success",
+            position: "top",
+          });
+          this.loading=false
         })
         .catch((err) => {
           console.log(err);
         });
- 
     },
     deleteAppointment(val) {
       this.isShowPopup = !this.isShowPopup;
-      this.appointmentDeleted=val
+      this.appointmentDeleted = val;
     },
     showForm() {
       this.isShowForm = !this.isShowForm;
-      this.formMode=1
+      this.formMode = 1;
     },
     showFormEdit(item) {
-      debugger
       this.isShowForm = !this.isShowForm;
       this.appointment = item;
-      this.formMode=2
+      this.formMode = 2;
     },
     formatEnum(e) {
       var text = "";
       switch (e) {
         case 1:
           text = "Mới tạo";
-        
+
           break;
         case 2:
           text = "Sắp tới";
@@ -341,14 +378,16 @@ export default {
         });
     },
     getAppointment() {
+      this.loading=true
       var me = this;
-      var url =`https://localhost:44371/api/Appoinments/appointments?keyword=${this.keyword}&id=${this.id}`;
+      var url = `https://localhost:44371/api/Appoinments/appointments?keyword=${this.keyword}&id=${this.id}&status=${this.status}`;
       axios
         .get(`${url}`)
         .then(function (res) {
+          me.loading=false
           if (res.data.length > 0) {
             me.listAppointment = res.data;
-            me.patients=[]
+            me.patients = [];
             if (me.user != 1) {
               var appointment = me.listAppointment.filter(
                 (item) => item.PatientID != null
@@ -369,11 +408,15 @@ export default {
               var appointment = me.listAppointment.filter(
                 (item) => item.PatientID == null || item.PatientName == ""
               );
-              me.patients.push({ PatientID: null, PatientName: "",listAppointments:[] });
+              me.patients.push({
+                PatientID: null,
+                PatientName: "",
+                listAppointments: [],
+              });
               if (appointment && appointment.length > 0) {
                 for (let i = 0; i < appointment.length; i++) {
                   const el = appointment[i];
-                  me.patients[0].listAppointments.push(el) ;
+                  me.patients[0].listAppointments.push(el);
                 }
               }
             }

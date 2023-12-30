@@ -660,8 +660,12 @@ export default {
       this.isShowStep3 = !this.isShowStep3;
     },
     nextStep1() {
-      this.isShowStep1 = !this.isShowStep1;
-      this.isShowStep2 = !this.isShowStep2;
+
+      if(this.validateAll()){
+        this.isShowStep1 = !this.isShowStep1;
+
+        this.isShowStep2 = !this.isShowStep2;
+      }
     },
     nextStep2() {
       this.isShowStep2 = !this.isShowStep2;
